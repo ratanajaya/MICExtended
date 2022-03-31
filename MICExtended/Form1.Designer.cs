@@ -34,6 +34,9 @@
             this.listViewSrc = new System.Windows.Forms.ListView();
             this.colFile = new System.Windows.Forms.ColumnHeader();
             this.colSize = new System.Windows.Forms.ColumnHeader();
+            this.listViewDst = new System.Windows.Forms.ListView();
+            this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -115,11 +118,34 @@
             this.colSize.Text = "Size";
             this.colSize.Width = 80;
             // 
+            // listViewDst
+            // 
+            this.listViewDst.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2});
+            this.listViewDst.Location = new System.Drawing.Point(420, 219);
+            this.listViewDst.Name = "listViewDst";
+            this.listViewDst.Size = new System.Drawing.Size(400, 219);
+            this.listViewDst.TabIndex = 4;
+            this.listViewDst.UseCompatibleStateImageBehavior = false;
+            this.listViewDst.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "File";
+            this.columnHeader1.Width = 320;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "Size";
+            this.columnHeader2.Width = 80;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(829, 450);
+            this.Controls.Add(this.listViewDst);
             this.Controls.Add(this.listViewSrc);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -145,5 +171,8 @@
         private ListView listViewSrc;
         private ColumnHeader colFile;
         private ColumnHeader colSize;
+        private ListView listViewDst;
+        private ColumnHeader columnHeader1;
+        private ColumnHeader columnHeader2;
     }
 }

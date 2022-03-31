@@ -16,10 +16,32 @@ namespace MICExtended.Services
             _io = io;
         }
 
-        public List<FileInfo> GetFileInfos(string path) {
+        public IEnumerable<FileViewModel> GetCompressedFilePreview(string srcPath, string dstPath, List<FileViewModel> sourceFiles, SelectionConditionModel selectionCondition) {
+            var result = sourceFiles.Select(a => new FileViewModel {
+                FilePath = Path.Combine(dstPath, selectionCondition.ConvertToJpg 
+                    ? Path.ChangeExtension(a.RelativePath, ".jpg") 
+                    : a.RelativePath),
+                Size = null
+            });
+
+            return result;
+        }
+
+        public IEnumerable<FileViewModel> GetFileViewModels(string path) {
+            var result = GetFileInfos(path).OrderByAlphaNumeric(a => a.FullName)
+                    .Select(a => new FileViewModel {
+                        RootPath = path,
+                        FilePath = a.FullName,
+                        Extension = a.Extension,
+                        Size = a.Length,
+                    });
+
+            return result;
+        }
+
+        private IEnumerable<FileInfo> GetFileInfos(string path) {
             var filePaths = _io.GetAllFiles(path);
-            var result = filePaths.OrderByAlphaNumeric(a => a)
-                .Select(a => new FileInfo(a))
+            var result = filePaths.Select(a => new FileInfo(a))
                 .ToList();
 
             return result;
