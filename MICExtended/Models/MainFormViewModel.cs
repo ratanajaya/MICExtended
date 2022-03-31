@@ -8,9 +8,12 @@ namespace MICExtended.Models
 {
     public class MainFormViewModel
     {
-        public string SrcDir { get; set; }
-        public string DstDir { get; set; }
+        public string SrcDir { get; set; } = string.Empty;
+        public string DstDir { get; set; } = string.Empty;
 
-        public List<FileInfo> SrcFileInfos { get; set; }
+        public List<FileViewModel> SrcFiles { get; set; } = new List<FileViewModel>();
+        public List<FileViewModel> DstFiles { get; set; } = new List<FileViewModel>();
+
+        public SelectionConditionModel SelectionCondition { get; set; } = new SelectionConditionModel();
     }
 }
