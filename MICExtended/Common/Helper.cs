@@ -10,22 +10,11 @@ namespace MICExtended.Common
 {
     public static class Helper
     {
-        private static List<string> extensionsAllowd
-                = new List<string>(new string[] { ".JPG", ".JPEG", ".PNG", ".BMP", ".RLE", ".DIB", ".GIF", ".TIF", ".TIFF", ".WMF",
-                    ".3FR" , ".ARI" , ".ARW" , ".BAY" , ".CRW" , ".CR2" , ".CAP" , ".DCS" , ".DCR" , ".DNG" ,
-                    ".DRF" , ".EIP" , ".ERF" , ".FFF" , ".IIQ" , ".K25" , ".KDC" , ".MDC" , ".MEF" , ".MOS" ,
-                    ".MRW" , ".NEF" , ".NRW" , ".OBM" , ".ORF" , ".PEF" , ".PTX" , ".PXN" , ".R3D" , ".RAF" ,
-                    ".RAW" , ".RWL" , ".RW2" , ".RWZ" , ".SR2" , ".SRF" , ".SRW" , ".X3F"
-                    });
-        private static List<string> rawExtensionsAllowd = new List<string>(new string[] {
-                        ".3FR" , ".ARI" , ".ARW" , ".BAY" , ".CRW" , ".CR2" , ".CAP" , ".DCS" , ".DCR" , ".DNG" ,
-                        ".DRF" , ".EIP" , ".ERF" , ".FFF" , ".IIQ" , ".K25" , ".KDC" , ".MDC" , ".MEF" , ".MOS" ,
-                        ".MRW" , ".NEF" , ".NRW" , ".OBM" , ".ORF" , ".PEF" , ".PTX" , ".PXN" , ".R3D" , ".RAF" ,
-                        ".RAW" , ".RWL" , ".RW2" , ".RWZ" , ".SR2" , ".SRF" , ".SRW" , ".X3F"
-                    });
+        private static List<string> extensionsAllowd = Constant.Extension.ALLOWED.ToList();
+        private static List<string> rawExtensionsAllowd = Constant.Extension.ALLOWED_RAW.ToList();
 
-        public static string strJpegExtension = ".jpeg";
-        public static string strPngExtension = ".png";
+        public static string strJpegExtension = Constant.Extension.JPEG;
+        public static string strPngExtension = Constant.Extension.PNG;
 
         public static bool IsSupportedImage(string filePath) {
             if(Helper.extensionsAllowd.Contains(Path.GetExtension(filePath).ToUpper()))

@@ -20,8 +20,8 @@ namespace MICExtended.Services
 
         public IEnumerable<FileViewModel> GetCompressedFilePreview(string srcPath, string dstPath, List<FileViewModel> sourceFiles, SelectionConditionModel selectionCondition) {
             var result = sourceFiles.Select(a => new FileViewModel {
-                FilePath = Path.Combine(dstPath, selectionCondition.ConvertToJpg 
-                    ? Path.ChangeExtension(a.RelativePath, ".jpg") 
+                FilePath = Path.Combine(dstPath, selectionCondition.ConvertToJpg
+                    ? Path.ChangeExtension(a.RelativePath, Constant.Extension.JPG)
                     : a.RelativePath),
                 Size = null
             });
@@ -30,23 +30,34 @@ namespace MICExtended.Services
         }
 
         public IEnumerable<FileViewModel> GetFileViewModels(string path) {
-            var result = GetFileInfos(path).OrderByAlphaNumeric(a => a.FullName)
-                    .Select(a => new FileViewModel {
-                        RootPath = path,
-                        FilePath = a.FullName,
-                        Extension = a.Extension,
-                        Size = a.Length,
-                    });
+            var filePaths = GetSuitableFilePaths(path);
+            var result = filePaths.Select(a => {
+                var fi = new FileInfo(a);
+                return new FileViewModel {
+                    RootPath = path,
+                    FilePath = fi.FullName,
+                    Extension = fi.Extension,
+                    Size = fi.Length,
+                };
+            });
 
             return result;
         }
 
-        private IEnumerable<FileInfo> GetFileInfos(string path) {
-            var filePaths = _io.GetAllFiles(path);
-            var result = filePaths.Select(a => new FileInfo(a))
+        private IEnumerable<string> GetSuitableFilePaths(string path) {
+            string[] subDirs = _io.GetDirectories(path);
+            var filePathsFromSubdir = subDirs.SelectMany(s => GetSuitableFilePaths(s));
+
+            var filePaths = Directory.EnumerateFiles(path, "*.*", SearchOption.TopDirectoryOnly)
+                .Where(f => Constant.Extension.ALLOWED.Any(a => a.Equals(Path.GetExtension(f), StringComparison.OrdinalIgnoreCase)))
                 .ToList();
 
-            return result;
+            var fileNames = filePaths.Select(f => Path.GetFileName(f));
+            var sortedFileNames = fileNames.OrderByAlphaNumeric(f => f);
+            var sortedFilePaths = sortedFileNames.Select(f => Path.Combine(path, f));
+            var combinedFilePaths = filePathsFromSubdir.Concat(sortedFilePaths);
+
+            return combinedFilePaths;
         }
 
         public void CompressFiles(List<FileViewModel> srcFiles, List<FileViewModel> dstFiles) {
