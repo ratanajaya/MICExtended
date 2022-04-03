@@ -41,23 +41,38 @@ namespace MICExtended
             listViewDst.Items.AddRange(dstViewItems);
         }
 
-        private void btnOpenSrc_Click(object sender, EventArgs e) {
+        private string OpenDirectorySelector() {
             CommonOpenFileDialog dialog = new CommonOpenFileDialog() {
                 IsFolderPicker = true
             };
             if(dialog.ShowDialog() == CommonFileDialogResult.Ok) {
-                _viewModel.SrcDir = dialog.FileName;
-                _viewModel.SrcFiles = _al.GetFileViewModels(dialog.FileName).ToList();
-                var defaultDstPath = Path.Combine(dialog.FileName, "compressed");
-                _viewModel.DstDir = defaultDstPath;
-                _viewModel.DstFiles = _al.GetCompressedFilePreview(_viewModel.SrcDir, defaultDstPath, _viewModel.SrcFiles, _viewModel.SelectionCondition).ToList();
-
-                UpdateDisplay();
+                return dialog.FileName;
             }
+
+            return string.Empty;
+        }
+
+        #region Event Handlers
+        private void btnOpenSrc_Click(object sender, EventArgs e) {
+            _viewModel.SrcDir = OpenDirectorySelector();
+            _viewModel.SrcFiles = _al.GetFileViewModels(_viewModel.SrcDir).ToList();
+            _viewModel.DstDir = Path.Combine(_viewModel.SrcDir, Constant.Pathing.COMPRESSED);
+            _viewModel.DstFiles = _al.GetCompressedFilePreview(_viewModel.SrcDir, _viewModel.DstDir, _viewModel.SrcFiles, _viewModel.SelectionCondition).ToList();
+
+            UpdateDisplay();
+        }
+
+        private void btnOpenDst_Click(object sender, EventArgs e) {
+            _viewModel.DstDir = OpenDirectorySelector();
+            _viewModel.DstFiles = _al.GetCompressedFilePreview(_viewModel.SrcDir, _viewModel.DstDir, _viewModel.SrcFiles, _viewModel.SelectionCondition).ToList();
+
+            UpdateDisplay();
+
         }
 
         private void btnCompress_Click(object sender, EventArgs e) {
             _al.CompressFiles(_viewModel.SrcFiles, _viewModel.DstFiles);
         }
+        #endregion
     }
 }

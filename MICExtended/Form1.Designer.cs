@@ -89,6 +89,7 @@
             this.btnOpenDst.TabIndex = 1;
             this.btnOpenDst.Text = "...";
             this.btnOpenDst.UseVisualStyleBackColor = true;
+            this.btnOpenDst.Click += new System.EventHandler(this.btnOpenDst_Click);
             // 
             // txtDstDir
             // 
