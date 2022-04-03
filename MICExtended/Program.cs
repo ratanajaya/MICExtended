@@ -15,6 +15,7 @@ namespace MICExtended
             var services = new ServiceCollection();
             services.AddTransient<AppLogic>();
             services.AddTransient<IIoWapper, IoWrapper>();
+            services.AddTransient<ImageCompressor>();
             services.AddTransient<Form1>();
 
             ServiceProvider = services.BuildServiceProvider();
