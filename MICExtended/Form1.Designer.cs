@@ -37,6 +37,7 @@
             this.listViewDst = new System.Windows.Forms.ListView();
             this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
+            this.btnCompress = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -140,11 +141,23 @@
             this.columnHeader2.Text = "Size";
             this.columnHeader2.Width = 80;
             // 
+            // btnCompress
+            // 
+            this.btnCompress.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.btnCompress.Location = new System.Drawing.Point(720, 444);
+            this.btnCompress.Name = "btnCompress";
+            this.btnCompress.Size = new System.Drawing.Size(100, 40);
+            this.btnCompress.TabIndex = 5;
+            this.btnCompress.Text = "COMPRESS";
+            this.btnCompress.UseVisualStyleBackColor = true;
+            this.btnCompress.Click += new System.EventHandler(this.btnCompress_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(829, 450);
+            this.ClientSize = new System.Drawing.Size(829, 491);
+            this.Controls.Add(this.btnCompress);
             this.Controls.Add(this.listViewDst);
             this.Controls.Add(this.listViewSrc);
             this.Controls.Add(this.groupBox2);
@@ -174,5 +187,6 @@
         private ListView listViewDst;
         private ColumnHeader columnHeader1;
         private ColumnHeader columnHeader2;
+        private Button btnCompress;
     }
 }

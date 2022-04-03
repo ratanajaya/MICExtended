@@ -13,12 +13,17 @@ namespace MICExtended.Services
     public interface IIoWapper
     {
         IEnumerable<string> GetAllFiles(string path);
+        void CreateDirectory(string path);
     }
 
     public class IoWrapper : IIoWapper
     {
         public IEnumerable<string> GetAllFiles(string path) {
             return Directory.EnumerateFiles(path, "*.*", SearchOption.AllDirectories);
+        }
+
+        public void CreateDirectory(string path) { 
+            Directory.CreateDirectory(path);
         }
     }
 }

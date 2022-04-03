@@ -1,4 +1,4 @@
-using MICExtended.Helpers;
+using MICExtended.Common;
 using MICExtended.Models;
 using MICExtended.Services;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -54,6 +54,10 @@ namespace MICExtended
 
                 UpdateDisplay();
             }
+        }
+
+        private void btnCompress_Click(object sender, EventArgs e) {
+            _al.CompressFiles(_viewModel.SrcFiles, _viewModel.DstFiles);
         }
     }
 }

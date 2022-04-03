@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace MICExtended.Helpers
+namespace MICExtended.Common
 {
     /// <summary>
     /// Collection of pure functions
