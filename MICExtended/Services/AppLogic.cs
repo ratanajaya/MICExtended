@@ -18,11 +18,12 @@ namespace MICExtended.Services
             _ic = ic;
         }
 
-        public IEnumerable<FileViewModel> GetCompressedFilePreview(string srcPath, string dstPath, List<FileViewModel> sourceFiles, SelectionConditionModel selectionCondition) {
+        public IEnumerable<FileViewModel> GetCompressedFilePreview(string srcPath, string dstPath, List<FileViewModel> sourceFiles, CompressionConditionModel selectionCondition) {
             var result = sourceFiles.Select(a => new FileViewModel {
-                FilePath = Path.Combine(dstPath, selectionCondition.ConvertToJpg
-                    ? Path.ChangeExtension(a.RelativePath, Constant.Extension.JPG)
-                    : a.RelativePath),
+                FilePath = Path.Combine(dstPath, 
+                    selectionCondition.ConvertTo == ConvertTo.JPEG ? Path.ChangeExtension(a.RelativePath, Constant.Extension.JPG) : 
+                    selectionCondition.ConvertTo == ConvertTo.PNG ? Path.ChangeExtension(a.RelativePath, Constant.Extension.PNG) :
+                    a.RelativePath),
                 Size = null
             });
 
@@ -60,7 +61,7 @@ namespace MICExtended.Services
             return combinedFilePaths;
         }
 
-        public void CompressFiles(List<FileViewModel> srcFiles, List<FileViewModel> dstFiles) {
+        public void CompressFiles(List<FileViewModel> srcFiles, List<FileViewModel> dstFiles, CompressionConditionModel compressionCondition) {
             if(srcFiles.Count != dstFiles.Count) throw new InvalidDataException("srcFiles and dstFiles have different length");
 
             for(int i = 0; i < srcFiles.Count; i++) { 
@@ -70,7 +71,7 @@ namespace MICExtended.Services
                 var dstDir = Path.GetDirectoryName(dst.FilePath);
                 _io.CreateDirectory(dstDir);
 
-                _ic.CompressImage(src.FilePath, dst.FilePath, 90, null, SupportedMimeType.ORIGINAL);
+                _ic.CompressImage(src.FilePath, dst.FilePath, compressionCondition.Quality, null, SupportedMimeType.ORIGINAL);
             }
         }
     }

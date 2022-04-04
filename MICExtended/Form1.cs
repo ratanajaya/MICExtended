@@ -17,13 +17,24 @@ namespace MICExtended
         }
 
         private void Form1_Load(object sender, EventArgs e) {
-
+            UpdateCompressionParameter();
         }
 
+        #region UI Updater
         private void UpdateDisplay() {
+            UpdateDirectoryTxt();
+            UpdateSrcList();
+            UpdateDstList();
+            UpdateCompressionParameter();
+        }
+
+        private void UpdateDirectoryTxt() {
             txtScrDir.Text = _viewModel.SrcDir;
             txtDstDir.Text = _viewModel.DstDir;
+            btnOpenDst.Enabled = !string.IsNullOrEmpty(_viewModel.SrcDir);
+        }
 
+        private void UpdateSrcList() {
             var srcViewItems = _viewModel.SrcFiles.Select(a => {
                 var lv = new ListViewItem(a.FilePath.Replace(_viewModel.SrcDir, String.Empty));
                 lv.SubItems.Add(a.SizeDisplay);
@@ -31,7 +42,9 @@ namespace MICExtended
             }).ToArray();
             listViewSrc.Items.Clear();
             listViewSrc.Items.AddRange(srcViewItems);
+        }
 
+        private void UpdateDstList() {
             var dstViewItems = _viewModel.DstFiles.Select(a => {
                 var lv = new ListViewItem(a.FilePath.Replace(_viewModel.SrcDir, String.Empty));
                 lv.SubItems.Add(a.SizeDisplay);
@@ -41,6 +54,103 @@ namespace MICExtended
             listViewDst.Items.AddRange(dstViewItems);
         }
 
+        private void UpdateCompressionParameter() {
+            numQuality.Value 
+                = trkQuality.Value 
+                = _viewModel.Compression.Quality;
+
+            rbFixedWidth.Checked
+                = numFixedWidth.Enabled
+                = _viewModel.Compression.Dimension == Dimension.FixedWidth;
+
+            rbNewDimensionPct.Checked
+                = numNewDimensionPct.Enabled
+                = trkNewDimensionPct.Enabled
+                = _viewModel.Compression.Dimension == Dimension.NewDimensionInPct;
+
+            numFixedWidth.Value = _viewModel.Compression.DimensionFixedWidth;
+            numNewDimensionPct.Value 
+                = trkNewDimensionPct.Value 
+                = _viewModel.Compression.DimensionInPct;
+
+            rbCtJpeg.Checked = _viewModel.Compression.ConvertTo == ConvertTo.JPEG;
+            rbCtPng.Checked = _viewModel.Compression.ConvertTo == ConvertTo.PNG;
+            rbCtOriginal.Checked = _viewModel.Compression.ConvertTo == ConvertTo.Original;
+        }
+        #endregion
+
+        #region Event Handlers
+        private void btnOpenSrc_Click(object sender, EventArgs e) {
+            _viewModel.SrcDir = OpenDirectorySelector();
+            _viewModel.SrcFiles = _al.GetFileViewModels(_viewModel.SrcDir).ToList();
+            _viewModel.DstDir = Path.Combine(_viewModel.SrcDir, Constant.Pathing.COMPRESSED);
+            ReloadDstFiles();
+
+            UpdateDisplay();
+        }
+
+        private void btnOpenDst_Click(object sender, EventArgs e) {
+            _viewModel.DstDir = OpenDirectorySelector();
+            _viewModel.DstFiles = _al.GetCompressedFilePreview(_viewModel.SrcDir, _viewModel.DstDir, _viewModel.SrcFiles, _viewModel.Compression).ToList();
+            ReloadDstFiles();
+
+            UpdateDisplay();
+        }
+
+        private void btnCompress_Click(object sender, EventArgs e) {
+            _al.CompressFiles(_viewModel.SrcFiles, _viewModel.DstFiles, _viewModel.Compression);
+        }
+
+        private void trkQuality_Scroll(object sender, EventArgs e) {
+            _viewModel.Compression.Quality = trkQuality.Value;
+
+            UpdateCompressionParameter();
+        }
+
+        private void numQuality_ValueChanged(object sender, EventArgs e) {
+            _viewModel.Compression.Quality = (int)numQuality.Value;
+
+            UpdateCompressionParameter();
+        }
+
+        private void rbDimension_CheckedChanged(object sender, EventArgs e) {
+            _viewModel.Compression.Dimension = rbFixedWidth.Checked
+                ? Dimension.FixedWidth
+                : Dimension.NewDimensionInPct;
+
+            UpdateCompressionParameter();
+        }
+
+        private void numFixedWidth_ValueChanged(object sender, EventArgs e) {
+            _viewModel.Compression.DimensionFixedWidth = (int)numFixedWidth.Value;
+
+            UpdateCompressionParameter();
+        }
+
+        private void numNewDimensionPct_ValueChanged(object sender, EventArgs e) {
+            _viewModel.Compression.DimensionInPct = (int)numNewDimensionPct.Value;
+
+            UpdateCompressionParameter();
+        }
+
+        private void trkNewDimensionPct_Scroll(object sender, EventArgs e) {
+            _viewModel.Compression.DimensionInPct = trkNewDimensionPct.Value;
+
+            UpdateCompressionParameter();
+        }
+
+        private void rbCt_CheckedChanged(object sender, EventArgs e) {
+            _viewModel.Compression.ConvertTo = rbCtJpeg.Checked ? ConvertTo.JPEG
+                : rbCtPng.Checked ? ConvertTo.PNG
+                : ConvertTo.Original;
+            ReloadDstFiles();
+
+            UpdateCompressionParameter();
+            UpdateDstList();
+        }
+        #endregion
+
+        #region Shared
         private string OpenDirectorySelector() {
             CommonOpenFileDialog dialog = new CommonOpenFileDialog() {
                 IsFolderPicker = true
@@ -52,26 +162,8 @@ namespace MICExtended
             return string.Empty;
         }
 
-        #region Event Handlers
-        private void btnOpenSrc_Click(object sender, EventArgs e) {
-            _viewModel.SrcDir = OpenDirectorySelector();
-            _viewModel.SrcFiles = _al.GetFileViewModels(_viewModel.SrcDir).ToList();
-            _viewModel.DstDir = Path.Combine(_viewModel.SrcDir, Constant.Pathing.COMPRESSED);
-            _viewModel.DstFiles = _al.GetCompressedFilePreview(_viewModel.SrcDir, _viewModel.DstDir, _viewModel.SrcFiles, _viewModel.SelectionCondition).ToList();
-
-            UpdateDisplay();
-        }
-
-        private void btnOpenDst_Click(object sender, EventArgs e) {
-            _viewModel.DstDir = OpenDirectorySelector();
-            _viewModel.DstFiles = _al.GetCompressedFilePreview(_viewModel.SrcDir, _viewModel.DstDir, _viewModel.SrcFiles, _viewModel.SelectionCondition).ToList();
-
-            UpdateDisplay();
-
-        }
-
-        private void btnCompress_Click(object sender, EventArgs e) {
-            _al.CompressFiles(_viewModel.SrcFiles, _viewModel.DstFiles);
+        private void ReloadDstFiles() {
+            _viewModel.DstFiles = _al.GetCompressedFilePreview(_viewModel.SrcDir, _viewModel.DstDir, _viewModel.SrcFiles, _viewModel.Compression).ToList();
         }
         #endregion
     }
