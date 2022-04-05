@@ -86,6 +86,8 @@ namespace MICExtended.Services
                     CurrentTask = $"Finished compressing",
                     Step = taskCount,
                     TaskCount = taskCount,
+                    TaskEnd = true,
+                    TaskEndMessage = $"{taskCount} images has been compressed"
                 });
             });
         }
