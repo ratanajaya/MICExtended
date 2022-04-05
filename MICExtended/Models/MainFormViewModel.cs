@@ -15,5 +15,7 @@ namespace MICExtended.Models
         public List<FileViewModel> DstFiles { get; set; } = new List<FileViewModel>();
 
         public CompressionCondition Compression { get; set; } = new CompressionCondition();
+
+        public ProgressReport ProgressReport { get; set; } = new ProgressReport();
     }
 }

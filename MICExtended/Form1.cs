@@ -18,6 +18,7 @@ namespace MICExtended
 
         private void Form1_Load(object sender, EventArgs e) {
             UpdateCompressionParameter();
+            UpdateProgressBar();
         }
 
         #region UI Updater
@@ -26,6 +27,7 @@ namespace MICExtended
             UpdateSrcList();
             UpdateDstList();
             UpdateCompressionParameter();
+            UpdateProgressBar();
         }
 
         private void UpdateDirectoryTxt() {
@@ -78,12 +80,26 @@ namespace MICExtended
             rbCtOriginal.Checked = _viewModel.Compression.ConvertTo == SupportedMimeType.ORIGINAL;
         }
 
-        private void UpdateProgressBar(object? sender, ProgressReport report) {
-            lblProgress.Text = report.CurrentTask;
-            barProgress.Value = report.StepPct;
+        public void UpdateProgressBar() {
+            lblProgress.Text = _viewModel.ProgressReport.CurrentTask;
+            barProgress.Value = _viewModel.ProgressReport.StepPct;
             barProgress.Update();
+
+            if(_viewModel.ProgressReport.TaskEnd) {
+                var confirmResult = MessageBox.Show(_viewModel.ProgressReport.TaskEndMessage, "Success", MessageBoxButtons.OK);
+                if(confirmResult == DialogResult.OK) {
+                    _viewModel.ProgressReport = new ProgressReport();
+                    UpdateProgressBar();
+                }
+            }
         }
         #endregion
+
+        private void ProgressChanged(object? sender, ProgressReport report) {
+            _viewModel.ProgressReport = report;
+
+            UpdateProgressBar();
+        }
 
         #region Event Handlers
         private void btnOpenSrc_Click(object sender, EventArgs e) {
@@ -109,7 +125,7 @@ namespace MICExtended
 
         private async void btnCompress_Click(object sender, EventArgs e) {
             var progress = new Progress<ProgressReport>();
-            progress.ProgressChanged += UpdateProgressBar;
+            progress.ProgressChanged += ProgressChanged;
 
             await _al.CompressFiles(_viewModel.SrcFiles, _viewModel.DstFiles, _viewModel.Compression, progress);
         }

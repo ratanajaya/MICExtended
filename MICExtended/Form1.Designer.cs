@@ -370,13 +370,14 @@
             this.lblProgress.AutoSize = true;
             this.lblProgress.Location = new System.Drawing.Point(10, 445);
             this.lblProgress.Name = "lblProgress";
-            this.lblProgress.Size = new System.Drawing.Size(38, 15);
+            this.lblProgress.Size = new System.Drawing.Size(61, 15);
             this.lblProgress.TabIndex = 6;
-            this.lblProgress.Text = "label4";
+            this.lblProgress.Text = "TaskName";
             // 
             // barProgress
             // 
             this.barProgress.Location = new System.Drawing.Point(10, 466);
+            this.barProgress.Maximum = 1000;
             this.barProgress.Name = "barProgress";
             this.barProgress.Size = new System.Drawing.Size(700, 23);
             this.barProgress.Step = 1;
