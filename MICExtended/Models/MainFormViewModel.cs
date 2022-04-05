@@ -14,6 +14,6 @@ namespace MICExtended.Models
         public List<FileViewModel> SrcFiles { get; set; } = new List<FileViewModel>();
         public List<FileViewModel> DstFiles { get; set; } = new List<FileViewModel>();
 
-        public CompressionConditionModel Compression { get; set; } = new CompressionConditionModel();
+        public CompressionCondition Compression { get; set; } = new CompressionCondition();
     }
 }

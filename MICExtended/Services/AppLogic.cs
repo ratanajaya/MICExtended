@@ -18,11 +18,11 @@ namespace MICExtended.Services
             _ic = ic;
         }
 
-        public IEnumerable<FileViewModel> GetCompressedFilePreview(string srcPath, string dstPath, List<FileViewModel> sourceFiles, CompressionConditionModel selectionCondition) {
+        public IEnumerable<FileViewModel> GetCompressedFilePreview(string srcPath, string dstPath, List<FileViewModel> sourceFiles, CompressionCondition selectionCondition) {
             var result = sourceFiles.Select(a => new FileViewModel {
                 FilePath = Path.Combine(dstPath, 
-                    selectionCondition.ConvertTo == ConvertTo.JPEG ? Path.ChangeExtension(a.RelativePath, Constant.Extension.JPG) : 
-                    selectionCondition.ConvertTo == ConvertTo.PNG ? Path.ChangeExtension(a.RelativePath, Constant.Extension.PNG) :
+                    selectionCondition.ConvertTo == SupportedMimeType.JPEG ? Path.ChangeExtension(a.RelativePath, Constant.Extension.JPG) : 
+                    selectionCondition.ConvertTo == SupportedMimeType.PNG ? Path.ChangeExtension(a.RelativePath, Constant.Extension.PNG) :
                     a.RelativePath),
                 Size = null
             });
@@ -61,18 +61,33 @@ namespace MICExtended.Services
             return combinedFilePaths;
         }
 
-        public void CompressFiles(List<FileViewModel> srcFiles, List<FileViewModel> dstFiles, CompressionConditionModel compressionCondition) {
+        public Task CompressFiles(List<FileViewModel> srcFiles, List<FileViewModel> dstFiles, CompressionCondition compressionCondition, IProgress<ProgressReport> progress) {
             if(srcFiles.Count != dstFiles.Count) throw new InvalidDataException("srcFiles and dstFiles have different length");
 
-            for(int i = 0; i < srcFiles.Count; i++) { 
-                var src = srcFiles[i];
-                var dst = dstFiles[i];
+            return Task.Run(() => {
+                var taskCount = srcFiles.Count;
+                for(int i = 0; i < taskCount; i++) {
+                    progress.Report(new ProgressReport {
+                        CurrentTask = $"Compressing {srcFiles[i].Name}...",
+                        Step = i,
+                        TaskCount = taskCount,
+                    });
 
-                var dstDir = Path.GetDirectoryName(dst.FilePath);
-                _io.CreateDirectory(dstDir);
+                    var src = srcFiles[i];
+                    var dst = dstFiles[i];
 
-                _ic.CompressImage(src.FilePath, dst.FilePath, compressionCondition.Quality, null, SupportedMimeType.ORIGINAL);
-            }
+                    var dstDir = Path.GetDirectoryName(dst.FilePath);
+                    _io.CreateDirectory(dstDir);
+
+                    _ic.CompressImage(src.FilePath, dst.FilePath, compressionCondition.Quality, null, compressionCondition.ConvertTo);
+                }
+
+                progress.Report(new ProgressReport {
+                    CurrentTask = $"Finished compressing",
+                    Step = taskCount,
+                    TaskCount = taskCount,
+                });
+            });
         }
     }
 }
