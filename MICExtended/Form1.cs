@@ -73,15 +73,23 @@ namespace MICExtended
                 = trkNewDimensionPct.Value 
                 = _viewModel.Compression.DimensionInPct;
 
-            rbCtJpeg.Checked = _viewModel.Compression.ConvertTo == ConvertTo.JPEG;
-            rbCtPng.Checked = _viewModel.Compression.ConvertTo == ConvertTo.PNG;
-            rbCtOriginal.Checked = _viewModel.Compression.ConvertTo == ConvertTo.Original;
+            rbCtJpeg.Checked = _viewModel.Compression.ConvertTo == SupportedMimeType.JPEG;
+            rbCtPng.Checked = _viewModel.Compression.ConvertTo == SupportedMimeType.PNG;
+            rbCtOriginal.Checked = _viewModel.Compression.ConvertTo == SupportedMimeType.ORIGINAL;
+        }
+
+        private void UpdateProgressBar(object? sender, ProgressReport report) {
+            lblProgress.Text = report.CurrentTask;
+            barProgress.Value = report.StepPct;
+            barProgress.Update();
         }
         #endregion
 
         #region Event Handlers
         private void btnOpenSrc_Click(object sender, EventArgs e) {
             _viewModel.SrcDir = OpenDirectorySelector();
+            if(string.IsNullOrEmpty(_viewModel.SrcDir)) return;
+
             _viewModel.SrcFiles = _al.GetFileViewModels(_viewModel.SrcDir).ToList();
             _viewModel.DstDir = Path.Combine(_viewModel.SrcDir, Constant.Pathing.COMPRESSED);
             ReloadDstFiles();
@@ -91,14 +99,19 @@ namespace MICExtended
 
         private void btnOpenDst_Click(object sender, EventArgs e) {
             _viewModel.DstDir = OpenDirectorySelector();
+            if(string.IsNullOrEmpty(_viewModel.DstDir)) return;
+
             _viewModel.DstFiles = _al.GetCompressedFilePreview(_viewModel.SrcDir, _viewModel.DstDir, _viewModel.SrcFiles, _viewModel.Compression).ToList();
             ReloadDstFiles();
 
             UpdateDisplay();
         }
 
-        private void btnCompress_Click(object sender, EventArgs e) {
-            _al.CompressFiles(_viewModel.SrcFiles, _viewModel.DstFiles, _viewModel.Compression);
+        private async void btnCompress_Click(object sender, EventArgs e) {
+            var progress = new Progress<ProgressReport>();
+            progress.ProgressChanged += UpdateProgressBar;
+
+            await _al.CompressFiles(_viewModel.SrcFiles, _viewModel.DstFiles, _viewModel.Compression, progress);
         }
 
         private void trkQuality_Scroll(object sender, EventArgs e) {
@@ -140,9 +153,9 @@ namespace MICExtended
         }
 
         private void rbCt_CheckedChanged(object sender, EventArgs e) {
-            _viewModel.Compression.ConvertTo = rbCtJpeg.Checked ? ConvertTo.JPEG
-                : rbCtPng.Checked ? ConvertTo.PNG
-                : ConvertTo.Original;
+            _viewModel.Compression.ConvertTo = rbCtJpeg.Checked ? SupportedMimeType.JPEG
+                : rbCtPng.Checked ? SupportedMimeType.PNG
+                : SupportedMimeType.ORIGINAL;
             ReloadDstFiles();
 
             UpdateCompressionParameter();
@@ -164,6 +177,12 @@ namespace MICExtended
 
         private void ReloadDstFiles() {
             _viewModel.DstFiles = _al.GetCompressedFilePreview(_viewModel.SrcDir, _viewModel.DstDir, _viewModel.SrcFiles, _viewModel.Compression).ToList();
+        }
+        #endregion
+
+        #region Unused
+        private void progressBar1_Click(object sender, EventArgs e) {
+
         }
         #endregion
     }

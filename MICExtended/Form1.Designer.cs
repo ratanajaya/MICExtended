@@ -55,6 +55,8 @@
             this.numQuality = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.trkQuality = new System.Windows.Forms.TrackBar();
+            this.lblProgress = new System.Windows.Forms.Label();
+            this.barProgress = new System.Windows.Forms.ProgressBar();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -170,7 +172,7 @@
             // btnCompress
             // 
             this.btnCompress.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.btnCompress.Location = new System.Drawing.Point(720, 444);
+            this.btnCompress.Location = new System.Drawing.Point(720, 449);
             this.btnCompress.Name = "btnCompress";
             this.btnCompress.Size = new System.Drawing.Size(100, 40);
             this.btnCompress.TabIndex = 5;
@@ -363,11 +365,31 @@
             this.trkQuality.TickStyle = System.Windows.Forms.TickStyle.None;
             this.trkQuality.Scroll += new System.EventHandler(this.trkQuality_Scroll);
             // 
+            // lblProgress
+            // 
+            this.lblProgress.AutoSize = true;
+            this.lblProgress.Location = new System.Drawing.Point(10, 445);
+            this.lblProgress.Name = "lblProgress";
+            this.lblProgress.Size = new System.Drawing.Size(38, 15);
+            this.lblProgress.TabIndex = 6;
+            this.lblProgress.Text = "label4";
+            // 
+            // barProgress
+            // 
+            this.barProgress.Location = new System.Drawing.Point(10, 466);
+            this.barProgress.Name = "barProgress";
+            this.barProgress.Size = new System.Drawing.Size(700, 23);
+            this.barProgress.Step = 1;
+            this.barProgress.TabIndex = 7;
+            this.barProgress.Click += new System.EventHandler(this.progressBar1_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(829, 491);
+            this.ClientSize = new System.Drawing.Size(829, 501);
+            this.Controls.Add(this.barProgress);
+            this.Controls.Add(this.lblProgress);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.btnCompress);
@@ -394,6 +416,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numQuality)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trkQuality)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -429,5 +452,7 @@
         private RadioButton rbCtOriginal;
         private RadioButton rbCtPng;
         private RadioButton rbCtJpeg;
+        private Label lblProgress;
+        private ProgressBar barProgress;
     }
 }

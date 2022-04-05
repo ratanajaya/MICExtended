@@ -44,4 +44,10 @@ namespace MICExtended.Common
         PNG,
         ORIGINAL
     }
+
+    public enum Dimension
+    {
+        FixedWidth,
+        NewDimensionInPct
+    }
 }
