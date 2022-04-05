@@ -1,16 +1,27 @@
+using MICExtended.Services;
+using Microsoft.Extensions.DependencyInjection;
+
 namespace MICExtended
 {
     internal static class Program
     {
+        private static IServiceProvider? ServiceProvider { get; set; }
+
         /// <summary>
         ///  The main entry point for the application.
         /// </summary>
         [STAThread]
         static void Main() {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
+            var services = new ServiceCollection();
+            services.AddTransient<AppLogic>();
+            services.AddTransient<IIoWapper, IoWrapper>();
+            services.AddTransient<ImageCompressor>();
+            services.AddTransient<Form1>();
+
+            ServiceProvider = services.BuildServiceProvider();
+
             ApplicationConfiguration.Initialize();
-            Application.Run(new Form1());
+            Application.Run(ServiceProvider.GetService<Form1>());
         }
     }
 }
