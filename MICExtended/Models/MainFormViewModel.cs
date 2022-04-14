@@ -17,5 +17,8 @@ namespace MICExtended.Models
         public CompressionCondition Compression { get; set; } = new CompressionCondition();
 
         public ProgressReport ProgressReport { get; set; } = new ProgressReport();
+
+        public bool CheckAllFile { get; set; }
+        public List<string> FileTypes { get; set; } = new List<string>();
     }
 }

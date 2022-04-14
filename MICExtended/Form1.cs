@@ -2,30 +2,46 @@ using MICExtended.Common;
 using MICExtended.Models;
 using MICExtended.Services;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using System.Linq;
 
 namespace MICExtended
 {
     public partial class Form1 : Form
     {
         AppLogic _al;
-
-        private MainFormViewModel _viewModel = new MainFormViewModel();
+        MainFormViewModel _viewModel;
+        ConfigurationModel _config;
 
         public Form1(AppLogic appLogic) {
             InitializeComponent();
             _al = appLogic;
+            _viewModel = new MainFormViewModel();
+            _config = new ConfigurationModel();
         }
 
         private void Form1_Load(object sender, EventArgs e) {
+            Initialize();
+
             UpdateCompressionParameter();
             UpdateProgressBar();
         }
 
+        #region UI Setup
+        private void Initialize() {
+            _viewModel.FileTypes = _config.FileTypes;
+
+            clFileType.Items.AddRange(Constant.Extension.ALLOWED.ToArray());
+            clFileType.CheckOnClick = true;
+
+            UpdateClFileType();
+        }
+
+        #endregion
+
         #region UI Updater
         private void UpdateDisplay() {
             UpdateDirectoryTxt();
-            UpdateSrcList();
-            UpdateDstList();
+            UpdateFileList();
             UpdateCompressionParameter();
             UpdateProgressBar();
         }
@@ -56,6 +72,11 @@ namespace MICExtended
             listViewDst.Items.AddRange(dstViewItems);
         }
 
+        private void UpdateFileList() {
+            UpdateSrcList();
+            UpdateDstList();
+        }
+
         private void UpdateCompressionParameter() {
             numQuality.Value 
                 = trkQuality.Value 
@@ -80,7 +101,17 @@ namespace MICExtended
             rbCtOriginal.Checked = _viewModel.Compression.ConvertTo == SupportedMimeType.ORIGINAL;
         }
 
-        public void UpdateProgressBar() {
+        private void UpdateChkFileTypeAll() {
+            chkFileTypeAll.Checked = _viewModel.CheckAllFile;
+        }
+
+        private void UpdateClFileType() {
+            for(int i = 0; i < clFileType.Items.Count; i++) {
+                clFileType.SetItemChecked(i, _viewModel.FileTypes.Contains(clFileType.Items[i]));
+            }
+        }
+
+        private void UpdateProgressBar() {
             lblProgress.Text = _viewModel.ProgressReport.CurrentTask;
             barProgress.Value = _viewModel.ProgressReport.StepPct;
             barProgress.Update();
@@ -93,24 +124,24 @@ namespace MICExtended
                 }
             }
         }
-        #endregion
 
         private void ProgressChanged(object? sender, ProgressReport report) {
             _viewModel.ProgressReport = report;
 
             UpdateProgressBar();
         }
+        #endregion
 
         #region Event Handlers
         private void btnOpenSrc_Click(object sender, EventArgs e) {
             _viewModel.SrcDir = OpenDirectorySelector();
             if(string.IsNullOrEmpty(_viewModel.SrcDir)) return;
 
-            _viewModel.SrcFiles = _al.GetFileViewModels(_viewModel.SrcDir).ToList();
             _viewModel.DstDir = Path.Combine(_viewModel.SrcDir, Constant.Pathing.COMPRESSED);
-            ReloadDstFiles();
 
-            UpdateDisplay();
+            ReloadSrcFiles();
+            ReloadDstFiles();
+            UpdateFileList();
         }
 
         private void btnOpenDst_Click(object sender, EventArgs e) {
@@ -119,8 +150,7 @@ namespace MICExtended
 
             _viewModel.DstFiles = _al.GetCompressedFilePreview(_viewModel.SrcDir, _viewModel.DstDir, _viewModel.SrcFiles, _viewModel.Compression).ToList();
             ReloadDstFiles();
-
-            UpdateDisplay();
+            UpdateDstList();
         }
 
         private async void btnCompress_Click(object sender, EventArgs e) {
@@ -177,6 +207,26 @@ namespace MICExtended
             UpdateCompressionParameter();
             UpdateDstList();
         }
+
+        private void clFileType_SelectedIndexChanged(object sender, EventArgs e) {
+            _viewModel.FileTypes = clFileType.CheckedItems.Cast<object>().Select(a => clFileType.GetItemText(a)).ToList();
+
+            _viewModel.CheckAllFile = _viewModel.FileTypes.Count == clFileType.Items.Count;
+
+            UpdateChkFileTypeAll();
+            ReloadSrcFiles();
+            ReloadDstFiles();
+            UpdateFileList();
+        }
+
+        private void chkFileTypeAll_Click(object sender, EventArgs e) {
+            _viewModel.CheckAllFile = chkFileTypeAll.Checked;
+            _viewModel.FileTypes = _viewModel.CheckAllFile
+                ? clFileType.Items.Cast<object>().Select(a => clFileType.GetItemText(a)).ToList()
+                : new List<string>();
+
+            UpdateClFileType();
+        }
         #endregion
 
         #region Shared
@@ -189,6 +239,10 @@ namespace MICExtended
             }
 
             return string.Empty;
+        }
+
+        private void ReloadSrcFiles() {
+            _viewModel.SrcFiles = _al.GetFileViewModels(_viewModel.SrcDir, _viewModel.FileTypes).ToList();
         }
 
         private void ReloadDstFiles() {
