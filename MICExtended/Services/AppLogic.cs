@@ -21,8 +21,8 @@ namespace MICExtended.Services
         public IEnumerable<FileViewModel> GetCompressedFilePreview(string srcPath, string dstPath, List<FileViewModel> sourceFiles, CompressionCondition selectionCondition) {
             var result = sourceFiles.Select(a => new FileViewModel {
                 FilePath = Path.Combine(dstPath, 
-                    selectionCondition.ConvertTo == SupportedMimeType.JPEG ? Path.ChangeExtension(a.RelativePath, Constant.Extension.JPG) : 
-                    selectionCondition.ConvertTo == SupportedMimeType.PNG ? Path.ChangeExtension(a.RelativePath, Constant.Extension.PNG) :
+                    selectionCondition.ConvertTo == SupportedMimeType.JPEG ? Path.ChangeExtension(a.RelativePath, Constant.Extension.JPG.ToLower()) : 
+                    selectionCondition.ConvertTo == SupportedMimeType.PNG ? Path.ChangeExtension(a.RelativePath, Constant.Extension.PNG.ToLower()) :
                     a.RelativePath),
                 Size = null
             });
@@ -30,8 +30,8 @@ namespace MICExtended.Services
             return result;
         }
 
-        public IEnumerable<FileViewModel> GetFileViewModels(string path) {
-            var filePaths = GetSuitableFilePaths(path);
+        public IEnumerable<FileViewModel> GetFileViewModels(string path, List<string> fileTypes) {
+            var filePaths = GetSuitableFilePaths(path, fileTypes);
             var result = filePaths.Select(a => {
                 var fi = new FileInfo(a);
                 return new FileViewModel {
@@ -45,12 +45,12 @@ namespace MICExtended.Services
             return result;
         }
 
-        private IEnumerable<string> GetSuitableFilePaths(string path) {
+        private IEnumerable<string> GetSuitableFilePaths(string path, List<string> fileTypes) {
             string[] subDirs = _io.GetDirectories(path);
-            var filePathsFromSubdir = subDirs.SelectMany(s => GetSuitableFilePaths(s));
+            var filePathsFromSubdir = subDirs.SelectMany(s => GetSuitableFilePaths(s, fileTypes));
 
             var filePaths = Directory.EnumerateFiles(path, "*.*", SearchOption.TopDirectoryOnly)
-                .Where(f => Constant.Extension.ALLOWED.Any(a => a.Equals(Path.GetExtension(f), StringComparison.OrdinalIgnoreCase)))
+                .Where(f => fileTypes.Any(a => a.Equals(Path.GetExtension(f), StringComparison.OrdinalIgnoreCase)))
                 .ToList();
 
             var fileNames = filePaths.Select(f => Path.GetFileName(f));

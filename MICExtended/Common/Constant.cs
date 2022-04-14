@@ -15,9 +15,9 @@ namespace MICExtended.Common
         }
         public static class Extension
         {
-            public const string JPG = ".jpg";
-            public const string JPEG = ".jpeg";
-            public const string PNG = ".png";
+            public const string JPG = ".JPG";
+            public const string JPEG = ".JPEG";
+            public const string PNG = ".PNG";
 
             public static readonly ReadOnlyCollection<string> ALLOWED = new ReadOnlyCollection<string> (
                 new[] { 

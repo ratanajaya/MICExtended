@@ -39,6 +39,8 @@
             this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
             this.btnCompress = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.clFileType = new System.Windows.Forms.CheckedListBox();
+            this.chkFileTypeAll = new System.Windows.Forms.CheckBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.rbCtOriginal = new System.Windows.Forms.RadioButton();
@@ -59,6 +61,7 @@
             this.barProgress = new System.Windows.Forms.ProgressBar();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox6.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trkNewDimensionPct)).BeginInit();
@@ -182,12 +185,34 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.clFileType);
+            this.groupBox3.Controls.Add(this.chkFileTypeAll);
             this.groupBox3.Location = new System.Drawing.Point(10, 69);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(400, 144);
             this.groupBox3.TabIndex = 2;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "File Selection";
+            // 
+            // clFileType
+            // 
+            this.clFileType.FormattingEnabled = true;
+            this.clFileType.Location = new System.Drawing.Point(6, 40);
+            this.clFileType.Name = "clFileType";
+            this.clFileType.Size = new System.Drawing.Size(111, 94);
+            this.clFileType.TabIndex = 11;
+            this.clFileType.SelectedIndexChanged += new System.EventHandler(this.clFileType_SelectedIndexChanged);
+            // 
+            // chkFileTypeAll
+            // 
+            this.chkFileTypeAll.AutoSize = true;
+            this.chkFileTypeAll.Location = new System.Drawing.Point(9, 19);
+            this.chkFileTypeAll.Name = "chkFileTypeAll";
+            this.chkFileTypeAll.Size = new System.Drawing.Size(114, 19);
+            this.chkFileTypeAll.TabIndex = 12;
+            this.chkFileTypeAll.Text = "Select All / None";
+            this.chkFileTypeAll.UseVisualStyleBackColor = true;
+            this.chkFileTypeAll.Click += new System.EventHandler(this.chkFileTypeAll_Click);
             // 
             // groupBox4
             // 
@@ -405,6 +430,8 @@
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.groupBox6.ResumeLayout(false);
@@ -455,5 +482,7 @@
         private RadioButton rbCtJpeg;
         private Label lblProgress;
         private ProgressBar barProgress;
+        private CheckedListBox clFileType;
+        private CheckBox chkFileTypeAll;
     }
 }
