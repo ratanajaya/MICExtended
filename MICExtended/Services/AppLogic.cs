@@ -13,6 +13,8 @@ namespace MICExtended.Services
         private IIoWapper _io;
         private ImageCompressor _ic;
 
+        private Dictionary<string, IEnumerable<FileViewModel>> _fileCache = new Dictionary<string, IEnumerable<FileViewModel>>();
+
         public AppLogic(IIoWapper io, ImageCompressor ic) {
             _io = io;
             _ic = ic;
@@ -31,35 +33,45 @@ namespace MICExtended.Services
         }
 
         public IEnumerable<FileViewModel> GetFileViewModels(string path, List<string> fileTypes) {
-            var filePaths = GetSuitableFilePaths(path, fileTypes);
-            var result = filePaths.Select(a => {
-                var fi = new FileInfo(a);
-                var img = Image.FromFile(a);
-                return new FileViewModel {
-                    RootPath = path,
-                    FilePath = fi.FullName,
-                    Extension = fi.Extension,
-                    Size = fi.Length,
-                    Height = img.Height,
-                    Width = img.Width,
-                };
-            });
+            var allData = new Func<IEnumerable<FileViewModel>>(() => {
+                if(_fileCache.ContainsKey(path)) return _fileCache[path];
 
-            return result;
+                var filePaths = GetSuitableFilePaths(path);
+                var fileVms = filePaths.Select(a => {
+                    var fi = new FileInfo(a);
+                    var img = Image.FromFile(a);
+                    return new FileViewModel {
+                        RootPath = path,
+                        FilePath = fi.FullName,
+                        Extension = fi.Extension,
+                        Size = fi.Length,
+                        Height = img.Height,
+                        Width = img.Width,
+                    };
+                });
+
+                _fileCache.Add(path, fileVms);
+
+                return _fileCache[path];
+            })();
+
+            var selectedData = allData.Where(a => fileTypes.Any(b => b.Equals(a.Extension, StringComparison.OrdinalIgnoreCase)));
+
+            return selectedData;
         }
 
-        private IEnumerable<string> GetSuitableFilePaths(string path, List<string> fileTypes) {
+        private IEnumerable<string> GetSuitableFilePaths(string path) {
             string[] subDirs = _io.GetDirectories(path);
-            var filePathsFromSubdir = subDirs.SelectMany(s => GetSuitableFilePaths(s, fileTypes));
+            var filePathsFromSubdir = subDirs.SelectMany(s => GetSuitableFilePaths(s));
 
             var filePaths = Directory.EnumerateFiles(path, "*.*", SearchOption.TopDirectoryOnly)
-                .Where(f => fileTypes.Any(a => a.Equals(Path.GetExtension(f), StringComparison.OrdinalIgnoreCase)))
+                .Where(f => Constant.Extension.ALLOWED.Any(a => a.Equals(Path.GetExtension(f), StringComparison.OrdinalIgnoreCase)))
                 .ToList();
 
             var fileNames = filePaths.Select(f => Path.GetFileName(f));
             var sortedFileNames = fileNames.OrderByAlphaNumeric(f => f);
-            var sortedFilePaths = sortedFileNames.Select(f => Path.Combine(path, f));
-            var combinedFilePaths = filePathsFromSubdir.Concat(sortedFilePaths);
+            var sortedFilePaths = fileNames.Select(f => Path.Combine(path, f));
+            var combinedFilePaths = filePathsFromSubdir.Concat(sortedFilePaths).ToList();
 
             return combinedFilePaths;
         }
@@ -93,6 +105,10 @@ namespace MICExtended.Services
                     TaskEndMessage = $"{taskCount} images has been compressed"
                 });
             });
+        }
+
+        public void ClearCache() {
+            _fileCache.Clear();
         }
     }
 }

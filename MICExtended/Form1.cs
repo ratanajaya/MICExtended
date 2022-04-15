@@ -141,6 +141,9 @@ namespace MICExtended
 
             _viewModel.DstDir = Path.Combine(_viewModel.SrcDir, Constant.Pathing.COMPRESSED);
 
+            _al.ClearCache();
+
+            UpdateDirectoryTxt();
             ReloadSrcFiles();
             ReloadDstFiles();
             UpdateFileList();
@@ -151,6 +154,7 @@ namespace MICExtended
             if(string.IsNullOrEmpty(_viewModel.DstDir)) return;
 
             _viewModel.DstFiles = _al.GetCompressedFilePreview(_viewModel.SrcDir, _viewModel.DstDir, _viewModel.SrcFiles, _viewModel.Compression).ToList();
+            UpdateDirectoryTxt();
             ReloadDstFiles();
             //UpdateDstList();
         }
@@ -228,6 +232,12 @@ namespace MICExtended
                 : new List<string>();
 
             UpdateClFileType();
+            ReloadSrcFiles();
+            UpdateFileList();
+        }
+
+        private void listViewSrc_ColumnClick(object sender, ColumnClickEventArgs e) {
+            //TODO column sorting
         }
         #endregion
 
@@ -254,6 +264,10 @@ namespace MICExtended
 
         #region Unused
         private void progressBar1_Click(object sender, EventArgs e) {
+
+        }
+
+        private void listViewSrc_SelectedIndexChanged(object sender, EventArgs e) {
 
         }
         #endregion

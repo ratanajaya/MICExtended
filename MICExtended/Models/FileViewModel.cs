@@ -61,17 +61,17 @@ namespace MICExtended.Models
             }
         }
 
-        public decimal BytesPer100Pixel {
+        public int BytesPer100Pixel {
             get {
                 if((Area == 0) || Size.GetValueOrDefault() == 0) return 0;
 
-                return 100 * (decimal)Size.GetValueOrDefault() / (decimal)Area;
+                return (int)(100 * (decimal)Size.GetValueOrDefault() / (decimal)Area);
             }
         }
 
         public string BytesPer100PixelDisplay {
             get {
-                return String.Format("{0:0.00}", BytesPer100Pixel);
+                return BytesPer100Pixel.ToString();
             }
         }
     }
