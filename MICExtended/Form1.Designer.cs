@@ -38,6 +38,10 @@
             this.srcColBytesPerPixel = new System.Windows.Forms.ColumnHeader();
             this.btnCompress = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.numMinB100 = new System.Windows.Forms.NumericUpDown();
+            this.numMinSize = new System.Windows.Forms.NumericUpDown();
+            this.chkMinB100 = new System.Windows.Forms.CheckBox();
+            this.chkMinSize = new System.Windows.Forms.CheckBox();
             this.clFileType = new System.Windows.Forms.CheckedListBox();
             this.chkFileTypeAll = new System.Windows.Forms.CheckBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
@@ -69,6 +73,8 @@
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numMinB100)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numMinSize)).BeginInit();
             this.groupBox4.SuspendLayout();
             this.groupBox6.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trkNewDimensionPct)).BeginInit();
@@ -187,6 +193,10 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.numMinB100);
+            this.groupBox3.Controls.Add(this.numMinSize);
+            this.groupBox3.Controls.Add(this.chkMinB100);
+            this.groupBox3.Controls.Add(this.chkMinSize);
             this.groupBox3.Controls.Add(this.clFileType);
             this.groupBox3.Controls.Add(this.chkFileTypeAll);
             this.groupBox3.Location = new System.Drawing.Point(10, 69);
@@ -195,6 +205,54 @@
             this.groupBox3.TabIndex = 2;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "File Selection";
+            // 
+            // numMinB100
+            // 
+            this.numMinB100.Location = new System.Drawing.Point(242, 48);
+            this.numMinB100.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.numMinB100.Name = "numMinB100";
+            this.numMinB100.Size = new System.Drawing.Size(88, 23);
+            this.numMinB100.TabIndex = 15;
+            this.numMinB100.ValueChanged += new System.EventHandler(this.minParameter_ValueChanged);
+            // 
+            // numMinSize
+            // 
+            this.numMinSize.Location = new System.Drawing.Point(242, 18);
+            this.numMinSize.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.numMinSize.Name = "numMinSize";
+            this.numMinSize.Size = new System.Drawing.Size(88, 23);
+            this.numMinSize.TabIndex = 10;
+            this.numMinSize.ValueChanged += new System.EventHandler(this.minParameter_ValueChanged);
+            // 
+            // chkMinB100
+            // 
+            this.chkMinB100.AutoSize = true;
+            this.chkMinB100.Location = new System.Drawing.Point(143, 49);
+            this.chkMinB100.Name = "chkMinB100";
+            this.chkMinB100.Size = new System.Drawing.Size(93, 19);
+            this.chkMinB100.TabIndex = 14;
+            this.chkMinB100.Text = "Min B/100px";
+            this.chkMinB100.UseVisualStyleBackColor = true;
+            this.chkMinB100.CheckedChanged += new System.EventHandler(this.minParameter_CheckedChanged);
+            // 
+            // chkMinSize
+            // 
+            this.chkMinSize.AutoSize = true;
+            this.chkMinSize.Location = new System.Drawing.Point(143, 19);
+            this.chkMinSize.Name = "chkMinSize";
+            this.chkMinSize.Size = new System.Drawing.Size(95, 19);
+            this.chkMinSize.TabIndex = 13;
+            this.chkMinSize.Text = "Min Size (Kb)";
+            this.chkMinSize.UseVisualStyleBackColor = true;
+            this.chkMinSize.CheckedChanged += new System.EventHandler(this.minParameter_CheckedChanged);
             // 
             // clFileType
             // 
@@ -499,6 +557,8 @@
             this.groupBox2.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numMinB100)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numMinSize)).EndInit();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.groupBox6.ResumeLayout(false);
@@ -561,5 +621,9 @@
         private ColumnHeader dstColSize;
         private ColumnHeader dstColDimension;
         private ColumnHeader dstColBytesPerPixel;
+        private CheckBox chkMinB100;
+        private CheckBox chkMinSize;
+        private NumericUpDown numMinB100;
+        private NumericUpDown numMinSize;
     }
 }

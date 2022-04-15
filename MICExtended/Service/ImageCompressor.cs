@@ -10,7 +10,7 @@ using System.Linq;
 using System.Threading;
 using MICExtended.Common;
 
-namespace MICExtended.Services
+namespace MICExtended.Service
 {
     public class ImageCompressor
     {

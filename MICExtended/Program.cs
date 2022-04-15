@@ -1,4 +1,4 @@
-using MICExtended.Services;
+using MICExtended.Service;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MICExtended
