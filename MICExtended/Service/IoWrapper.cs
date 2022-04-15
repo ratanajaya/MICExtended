@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MICExtended.Services
+namespace MICExtended.Service
 {
     /// <summary>
     /// Very thin abstraction of System.IO for Unit testing purposes
@@ -15,6 +15,9 @@ namespace MICExtended.Services
         IEnumerable<string> GetAllFiles(string path);
         void CreateDirectory(string path);
         string[] GetDirectories(string path);
+        bool FileExist(string path);
+        Task<string> ReadAllText(string path);
+        Task WriteAllText(string path, string text);
     }
 
     public class IoWrapper : IIoWapper
@@ -29,6 +32,18 @@ namespace MICExtended.Services
 
         public void CreateDirectory(string path) { 
             Directory.CreateDirectory(path);
+        }
+
+        public bool FileExist(string path) { 
+            return File.Exists(path);
+        }
+
+        public Task<string> ReadAllText(string path) {
+            return File.ReadAllTextAsync(path);
+        }
+
+        public Task WriteAllText(string path, string text) { 
+            return File.WriteAllTextAsync(path, text);
         }
     }
 }

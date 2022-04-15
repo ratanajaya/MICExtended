@@ -1,6 +1,6 @@
 using MICExtended.Common;
-using MICExtended.Models;
-using MICExtended.Services;
+using MICExtended.Model;
+using MICExtended.Service;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Linq;
 
@@ -9,43 +9,41 @@ namespace MICExtended
     public partial class Form1 : Form
     {
         AppLogic _al;
-        MainFormViewModel _viewModel;
-        ConfigurationModel _config;
+        MainFormViewModel _viewModel = new MainFormViewModel();
+        //ConfigurationModel _config = new ConfigurationModel();
 
-        public Form1(AppLogic appLogic) {
+        public Form1(AppLogic al) {
             InitializeComponent();
-            _al = appLogic;
-            _viewModel = new MainFormViewModel();
-            _config = new ConfigurationModel();
+            _al = al;
         }
 
-        private void Form1_Load(object sender, EventArgs e) {
-            Initialize();
+        private async void Form1_Load(object sender, EventArgs e) {
+            await Initialize();
 
             UpdateCompressionParameter();
             UpdateProgressBar();
+
+            this.FormClosing += new FormClosingEventHandler(Form1_FormClosing);
         }
 
         #region UI Setup
-        private void Initialize() {
-            _viewModel.FileTypes = _config.FileTypes;
+        private async Task Initialize() {
+            var config = await _al.LoadConfiguration();
+
+            _viewModel.Selection = config.Selection;
+            _viewModel.Compression = config.Compression;
 
             clFileType.Items.AddRange(Constant.Extension.ALLOWED.ToArray());
             clFileType.CheckOnClick = true;
 
             UpdateClFileType();
+            UpdateFileSelectionMinParameter();
+            UpdateFileSelectionMinParameterValue();
         }
 
         #endregion
 
         #region UI Updater
-        private void UpdateDisplay() {
-            UpdateDirectoryTxt();
-            UpdateFileList();
-            UpdateCompressionParameter();
-            UpdateProgressBar();
-        }
-
         private void UpdateDirectoryTxt() {
             txtScrDir.Text = _viewModel.SrcDir;
             txtDstDir.Text = _viewModel.DstDir;
@@ -74,11 +72,6 @@ namespace MICExtended
             listViewDst.Items.AddRange(dstViewItems);
         }
 
-        private void UpdateFileList() {
-            UpdateSrcList();
-            //UpdateDstList();
-        }
-
         private void UpdateCompressionParameter() {
             numQuality.Value 
                 = trkQuality.Value 
@@ -104,13 +97,25 @@ namespace MICExtended
         }
 
         private void UpdateChkFileTypeAll() {
-            chkFileTypeAll.Checked = _viewModel.CheckAllFile;
+            chkFileTypeAll.Checked = _viewModel.Selection.CheckAllFile;
         }
 
         private void UpdateClFileType() {
             for(int i = 0; i < clFileType.Items.Count; i++) {
-                clFileType.SetItemChecked(i, _viewModel.FileTypes.Contains(clFileType.Items[i]));
+                clFileType.SetItemChecked(i, _viewModel.Selection.FileTypes.Contains(clFileType.Items[i]));
             }
+        }
+
+        private void UpdateFileSelectionMinParameter() {
+            chkMinSize.Checked = _viewModel.Selection.UseMinSize;
+            chkMinB100.Checked = _viewModel.Selection.UseMinB100;
+            numMinSize.Enabled = _viewModel.Selection.UseMinSize;
+            numMinB100.Enabled = _viewModel.Selection.UseMinB100;
+        }
+
+        private void UpdateFileSelectionMinParameterValue() {
+            numMinSize.Value = _viewModel.Selection.MinSize;
+            numMinB100.Value = _viewModel.Selection.MinB100;
         }
 
         private void UpdateProgressBar() {
@@ -146,7 +151,6 @@ namespace MICExtended
             UpdateDirectoryTxt();
             ReloadSrcFiles();
             ReloadDstFiles();
-            UpdateFileList();
         }
 
         private void btnOpenDst_Click(object sender, EventArgs e) {
@@ -211,33 +215,44 @@ namespace MICExtended
             ReloadDstFiles();
 
             UpdateCompressionParameter();
-            //UpdateDstList();
         }
 
         private void clFileType_SelectedIndexChanged(object sender, EventArgs e) {
-            _viewModel.FileTypes = clFileType.CheckedItems.Cast<object>().Select(a => clFileType.GetItemText(a)).ToList();
+            _viewModel.Selection.FileTypes = clFileType.CheckedItems.Cast<object>().Select(a => clFileType.GetItemText(a)).ToList();
 
-            _viewModel.CheckAllFile = _viewModel.FileTypes.Count == clFileType.Items.Count;
+            _viewModel.Selection.CheckAllFile = _viewModel.Selection.FileTypes.Count == clFileType.Items.Count;
 
             UpdateChkFileTypeAll();
             ReloadSrcFiles();
-            ReloadDstFiles();
-            UpdateFileList();
         }
 
         private void chkFileTypeAll_Click(object sender, EventArgs e) {
-            _viewModel.CheckAllFile = chkFileTypeAll.Checked;
-            _viewModel.FileTypes = _viewModel.CheckAllFile
+            _viewModel.Selection.CheckAllFile = chkFileTypeAll.Checked;
+            _viewModel.Selection.FileTypes = _viewModel.Selection.CheckAllFile
                 ? clFileType.Items.Cast<object>().Select(a => clFileType.GetItemText(a)).ToList()
                 : new List<string>();
 
             UpdateClFileType();
             ReloadSrcFiles();
-            UpdateFileList();
         }
 
-        private void listViewSrc_ColumnClick(object sender, ColumnClickEventArgs e) {
-            //TODO column sorting
+        private void minParameter_CheckedChanged(object sender, EventArgs e) {
+            _viewModel.Selection.UseMinSize = chkMinSize.Checked;
+            _viewModel.Selection.UseMinB100 = chkMinB100.Checked;
+
+            UpdateFileSelectionMinParameter();
+            ReloadSrcFiles();
+        }
+
+        private void minParameter_ValueChanged(object sender, EventArgs e) {
+            _viewModel.Selection.MinSize = (int)numMinSize.Value;
+            _viewModel.Selection.MinB100 = (int)numMinB100.Value;
+
+            ReloadSrcFiles();
+        }
+
+        private async void Form1_FormClosing(object? sender, FormClosingEventArgs e) {
+            await _al.SaveConfiguration(_viewModel);
         }
         #endregion
 
@@ -254,11 +269,17 @@ namespace MICExtended
         }
 
         private void ReloadSrcFiles() {
-            _viewModel.SrcFiles = _al.GetFileViewModels(_viewModel.SrcDir, _viewModel.FileTypes).ToList();
+            if(string.IsNullOrEmpty(_viewModel.SrcDir)) return;
+
+            _viewModel.SrcFiles = _al.GetFileViewModels(_viewModel.SrcDir, _viewModel.Selection.FileTypes).ToList();
+            UpdateSrcList();
         }
 
         private void ReloadDstFiles() {
+            if(string.IsNullOrEmpty(_viewModel.DstDir)) return;
+
             _viewModel.DstFiles = _al.GetCompressedFilePreview(_viewModel.SrcDir, _viewModel.DstDir, _viewModel.SrcFiles, _viewModel.Compression).ToList();
+            UpdateDstList();
         }
         #endregion
 
@@ -269,6 +290,10 @@ namespace MICExtended
 
         private void listViewSrc_SelectedIndexChanged(object sender, EventArgs e) {
 
+        }
+
+        private void listViewSrc_ColumnClick(object sender, ColumnClickEventArgs e) {
+            //TODO column sorting
         }
         #endregion
     }

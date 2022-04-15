@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
-namespace MICExtended.Models
+namespace MICExtended.Model
 {
     public class FileViewModel
     {

@@ -1,17 +1,20 @@
 ﻿using MICExtended.Common;
-using MICExtended.Models;
+using MICExtended.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace MICExtended.Services
+namespace MICExtended.Service
 {
     public class AppLogic
     {
         private IIoWapper _io;
         private ImageCompressor _ic;
+        private string _configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json");
 
         private Dictionary<string, IEnumerable<FileViewModel>> _fileCache = new Dictionary<string, IEnumerable<FileViewModel>>();
 
@@ -19,6 +22,41 @@ namespace MICExtended.Services
             _io = io;
             _ic = ic;
         }
+
+        #region Configuration
+        public async Task<ConfigurationModel> LoadConfiguration() {
+            var defaultConf = new ConfigurationModel {
+                Selection = new SelectionCondition {
+                    FileTypes = new List<string> { Constant.Extension.JPEG, Constant.Extension.JPG, Constant.Extension.PNG }
+                }
+            };
+
+            try {
+                if(!_io.FileExist(_configPath)) return defaultConf;
+
+                var configTxt = await _io.ReadAllText(_configPath);
+                return JsonSerializer.Deserialize<ConfigurationModel>(configTxt) ?? defaultConf;
+            }
+            catch(Exception ex) {
+                return defaultConf;
+            }
+        }
+
+        public async Task SaveConfiguration(MainFormViewModel viewModel) {
+            try {
+                var config = new ConfigurationModel {
+                    Compression = viewModel.Compression,
+                    Selection = viewModel.Selection,
+                };
+
+                var configJson = JsonSerializer.Serialize(config);
+                await _io.WriteAllText(_configPath, configJson);
+            }
+            catch(Exception ex) { 
+                
+            }
+        }
+        #endregion
 
         public IEnumerable<FileViewModel> GetCompressedFilePreview(string srcPath, string dstPath, List<FileViewModel> sourceFiles, CompressionCondition selectionCondition) {
             var result = sourceFiles.Select(a => new FileViewModel {
@@ -32,7 +70,7 @@ namespace MICExtended.Services
             return result;
         }
 
-        public IEnumerable<FileViewModel> GetFileViewModels(string path, List<string> fileTypes) {
+        public IEnumerable<FileViewModel> GetFileViewModels(string path, SelectionCondition selection) {
             var allData = new Func<IEnumerable<FileViewModel>>(() => {
                 if(_fileCache.ContainsKey(path)) return _fileCache[path];
 
@@ -55,7 +93,11 @@ namespace MICExtended.Services
                 return _fileCache[path];
             })();
 
-            var selectedData = allData.Where(a => fileTypes.Any(b => b.Equals(a.Extension, StringComparison.OrdinalIgnoreCase)));
+            var selectedData = allData.Where(a => 
+                selection.FileTypes.Any(b => b.Equals(a.Extension, StringComparison.OrdinalIgnoreCase)) &&
+                (!selection.UseMinB100 || a.BytesPer100Pixel >= selection.MinB100) &&
+                (!selection.UseMinSize || a.Size >= selection.MinSize)
+            );
 
             return selectedData;
         }
