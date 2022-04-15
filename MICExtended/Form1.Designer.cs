@@ -32,11 +32,10 @@
             this.btnOpenDst = new System.Windows.Forms.Button();
             this.txtDstDir = new System.Windows.Forms.TextBox();
             this.listViewSrc = new System.Windows.Forms.ListView();
-            this.colFile = new System.Windows.Forms.ColumnHeader();
-            this.colSize = new System.Windows.Forms.ColumnHeader();
-            this.listViewDst = new System.Windows.Forms.ListView();
-            this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
-            this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
+            this.srcColFile = new System.Windows.Forms.ColumnHeader();
+            this.srcColSize = new System.Windows.Forms.ColumnHeader();
+            this.srcColDimension = new System.Windows.Forms.ColumnHeader();
+            this.srcColBytesPerPixel = new System.Windows.Forms.ColumnHeader();
             this.btnCompress = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.clFileType = new System.Windows.Forms.CheckedListBox();
@@ -59,6 +58,14 @@
             this.trkQuality = new System.Windows.Forms.TrackBar();
             this.lblProgress = new System.Windows.Forms.Label();
             this.barProgress = new System.Windows.Forms.ProgressBar();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.listViewDst = new System.Windows.Forms.ListView();
+            this.dstColFile = new System.Windows.Forms.ColumnHeader();
+            this.dstColSize = new System.Windows.Forms.ColumnHeader();
+            this.dstColDimension = new System.Windows.Forms.ColumnHeader();
+            this.dstColBytesPerPixel = new System.Windows.Forms.ColumnHeader();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -70,6 +77,9 @@
             this.groupBox5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numQuality)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trkQuality)).BeginInit();
+            this.tabControl1.SuspendLayout();
+            this.tabPage1.SuspendLayout();
+            this.tabPage2.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -131,46 +141,36 @@
             // listViewSrc
             // 
             this.listViewSrc.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.colFile,
-            this.colSize});
-            this.listViewSrc.Location = new System.Drawing.Point(10, 219);
+            this.srcColFile,
+            this.srcColSize,
+            this.srcColDimension,
+            this.srcColBytesPerPixel});
+            this.listViewSrc.Location = new System.Drawing.Point(0, 2);
             this.listViewSrc.Name = "listViewSrc";
-            this.listViewSrc.Size = new System.Drawing.Size(400, 219);
+            this.listViewSrc.Size = new System.Drawing.Size(800, 192);
             this.listViewSrc.TabIndex = 3;
             this.listViewSrc.UseCompatibleStateImageBehavior = false;
             this.listViewSrc.View = System.Windows.Forms.View.Details;
             // 
-            // colFile
+            // srcColFile
             // 
-            this.colFile.Text = "File";
-            this.colFile.Width = 320;
+            this.srcColFile.Text = "File";
+            this.srcColFile.Width = 539;
             // 
-            // colSize
+            // srcColSize
             // 
-            this.colSize.Text = "Size";
-            this.colSize.Width = 80;
+            this.srcColSize.Text = "Size";
+            this.srcColSize.Width = 80;
             // 
-            // listViewDst
+            // srcColDimension
             // 
-            this.listViewDst.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1,
-            this.columnHeader2});
-            this.listViewDst.Location = new System.Drawing.Point(420, 219);
-            this.listViewDst.Name = "listViewDst";
-            this.listViewDst.Size = new System.Drawing.Size(400, 219);
-            this.listViewDst.TabIndex = 4;
-            this.listViewDst.UseCompatibleStateImageBehavior = false;
-            this.listViewDst.View = System.Windows.Forms.View.Details;
+            this.srcColDimension.Text = "Dimension";
+            this.srcColDimension.Width = 80;
             // 
-            // columnHeader1
+            // srcColBytesPerPixel
             // 
-            this.columnHeader1.Text = "File";
-            this.columnHeader1.Width = 320;
-            // 
-            // columnHeader2
-            // 
-            this.columnHeader2.Text = "Size";
-            this.columnHeader2.Width = 80;
+            this.srcColBytesPerPixel.Text = "Bytes/Pixel";
+            this.srcColBytesPerPixel.Width = 80;
             // 
             // btnCompress
             // 
@@ -409,18 +409,83 @@
             this.barProgress.TabIndex = 7;
             this.barProgress.Click += new System.EventHandler(this.progressBar1_Click);
             // 
+            // tabControl1
+            // 
+            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Location = new System.Drawing.Point(10, 218);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(810, 224);
+            this.tabControl1.TabIndex = 8;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.listViewSrc);
+            this.tabPage1.Location = new System.Drawing.Point(4, 24);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(802, 196);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "Files to Compress";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.listViewDst);
+            this.tabPage2.Location = new System.Drawing.Point(4, 24);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(802, 196);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Compressed Files";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // listViewDst
+            // 
+            this.listViewDst.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.dstColFile,
+            this.dstColSize,
+            this.dstColDimension,
+            this.dstColBytesPerPixel});
+            this.listViewDst.Location = new System.Drawing.Point(0, 2);
+            this.listViewDst.Name = "listViewDst";
+            this.listViewDst.Size = new System.Drawing.Size(800, 192);
+            this.listViewDst.TabIndex = 0;
+            this.listViewDst.UseCompatibleStateImageBehavior = false;
+            this.listViewDst.View = System.Windows.Forms.View.Details;
+            // 
+            // dstColFile
+            // 
+            this.dstColFile.Text = "File Name";
+            this.dstColFile.Width = 539;
+            // 
+            // dstColSize
+            // 
+            this.dstColSize.Text = "Size";
+            this.dstColSize.Width = 80;
+            // 
+            // dstColDimension
+            // 
+            this.dstColDimension.Text = "Dimension";
+            this.dstColDimension.Width = 80;
+            // 
+            // dstColBytesPerPixel
+            // 
+            this.dstColBytesPerPixel.Text = "Bytes/Pixel";
+            this.dstColBytesPerPixel.Width = 80;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(829, 501);
+            this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.barProgress);
             this.Controls.Add(this.lblProgress);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.btnCompress);
-            this.Controls.Add(this.listViewDst);
-            this.Controls.Add(this.listViewSrc);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Name = "Form1";
@@ -443,6 +508,9 @@
             this.groupBox5.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numQuality)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trkQuality)).EndInit();
+            this.tabControl1.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -457,11 +525,8 @@
         private Button btnOpenDst;
         private TextBox txtDstDir;
         private ListView listViewSrc;
-        private ColumnHeader colFile;
-        private ColumnHeader colSize;
-        private ListView listViewDst;
-        private ColumnHeader columnHeader1;
-        private ColumnHeader columnHeader2;
+        private ColumnHeader srcColFile;
+        private ColumnHeader srcColSize;
         private Button btnCompress;
         private GroupBox groupBox3;
         private GroupBox groupBox4;
@@ -484,5 +549,15 @@
         private ProgressBar barProgress;
         private CheckedListBox clFileType;
         private CheckBox chkFileTypeAll;
+        private ColumnHeader srcColDimension;
+        private ColumnHeader srcColBytesPerPixel;
+        private TabControl tabControl1;
+        private TabPage tabPage1;
+        private TabPage tabPage2;
+        private ListView listViewDst;
+        private ColumnHeader dstColFile;
+        private ColumnHeader dstColSize;
+        private ColumnHeader dstColDimension;
+        private ColumnHeader dstColBytesPerPixel;
     }
 }
