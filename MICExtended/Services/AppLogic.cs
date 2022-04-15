@@ -34,11 +34,14 @@ namespace MICExtended.Services
             var filePaths = GetSuitableFilePaths(path, fileTypes);
             var result = filePaths.Select(a => {
                 var fi = new FileInfo(a);
+                var img = Image.FromFile(a);
                 return new FileViewModel {
                     RootPath = path,
                     FilePath = fi.FullName,
                     Extension = fi.Extension,
                     Size = fi.Length,
+                    Height = img.Height,
+                    Width = img.Width,
                 };
             });
 

@@ -14,7 +14,8 @@ namespace MICExtended.Models
         public string FilePath { get; set; } = string.Empty;
         public string Extension { get; set;} = string.Empty;
         public long? Size { get; set; }
-
+        public int Height { get; set; }
+        public int Width { get; set; }
 
         public string Name { 
             get {
@@ -38,6 +39,40 @@ namespace MICExtended.Models
             get {
                 return Size.HasValue ? Function.BytesToString(Size.Value) : string.Empty;
             } 
+        }
+
+        public string DimensionDisplay {
+            get {
+                return $"{Width} x {Height}";
+            }
+        }
+
+        public long Area {
+            get {
+                return Height * Width;
+            }
+        }
+
+        public decimal BytesPerPixel {
+            get {
+                if((Area == 0) || Size.GetValueOrDefault() == 0) return 0;
+
+                return (decimal)Size.GetValueOrDefault() / (decimal)Area;
+            }
+        }
+
+        public decimal BytesPer100Pixel {
+            get {
+                if((Area == 0) || Size.GetValueOrDefault() == 0) return 0;
+
+                return 100 * (decimal)Size.GetValueOrDefault() / (decimal)Area;
+            }
+        }
+
+        public string BytesPer100PixelDisplay {
+            get {
+                return String.Format("{0:0.00}", BytesPer100Pixel);
+            }
         }
     }
 }
