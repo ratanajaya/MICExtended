@@ -154,7 +154,7 @@
             // 
             // srcColFile
             // 
-            this.srcColFile.Text = "File";
+            this.srcColFile.Text = "File Name";
             this.srcColFile.Width = 539;
             // 
             // srcColSize
@@ -164,12 +164,12 @@
             // 
             // srcColDimension
             // 
-            this.srcColDimension.Text = "Dimension";
+            this.srcColDimension.Text = "Dimensions";
             this.srcColDimension.Width = 80;
             // 
             // srcColBytesPerPixel
             // 
-            this.srcColBytesPerPixel.Text = "Bytes/Pixel";
+            this.srcColBytesPerPixel.Text = "Bytes/100px";
             this.srcColBytesPerPixel.Width = 80;
             // 
             // btnCompress
@@ -467,12 +467,12 @@
             // 
             // dstColDimension
             // 
-            this.dstColDimension.Text = "Dimension";
+            this.dstColDimension.Text = "Dimensions";
             this.dstColDimension.Width = 80;
             // 
             // dstColBytesPerPixel
             // 
-            this.dstColBytesPerPixel.Text = "Bytes/Pixel";
+            this.dstColBytesPerPixel.Text = "Bytes/100px";
             this.dstColBytesPerPixel.Width = 80;
             // 
             // Form1

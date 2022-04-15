@@ -56,6 +56,8 @@ namespace MICExtended
             var srcViewItems = _viewModel.SrcFiles.Select(a => {
                 var lv = new ListViewItem(a.FilePath.Replace(_viewModel.SrcDir, String.Empty));
                 lv.SubItems.Add(a.SizeDisplay);
+                lv.SubItems.Add(a.DimensionDisplay);
+                lv.SubItems.Add(a.BytesPer100PixelDisplay);
                 return lv;
             }).ToArray();
             listViewSrc.Items.Clear();
@@ -74,7 +76,7 @@ namespace MICExtended
 
         private void UpdateFileList() {
             UpdateSrcList();
-            UpdateDstList();
+            //UpdateDstList();
         }
 
         private void UpdateCompressionParameter() {
@@ -150,7 +152,7 @@ namespace MICExtended
 
             _viewModel.DstFiles = _al.GetCompressedFilePreview(_viewModel.SrcDir, _viewModel.DstDir, _viewModel.SrcFiles, _viewModel.Compression).ToList();
             ReloadDstFiles();
-            UpdateDstList();
+            //UpdateDstList();
         }
 
         private async void btnCompress_Click(object sender, EventArgs e) {
@@ -205,7 +207,7 @@ namespace MICExtended
             ReloadDstFiles();
 
             UpdateCompressionParameter();
-            UpdateDstList();
+            //UpdateDstList();
         }
 
         private void clFileType_SelectedIndexChanged(object sender, EventArgs e) {
