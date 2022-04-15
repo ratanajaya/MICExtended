@@ -151,6 +151,8 @@
             this.listViewSrc.TabIndex = 3;
             this.listViewSrc.UseCompatibleStateImageBehavior = false;
             this.listViewSrc.View = System.Windows.Forms.View.Details;
+            this.listViewSrc.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listViewSrc_ColumnClick);
+            this.listViewSrc.SelectedIndexChanged += new System.EventHandler(this.listViewSrc_SelectedIndexChanged);
             // 
             // srcColFile
             // 
