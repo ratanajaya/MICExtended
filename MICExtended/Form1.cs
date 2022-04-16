@@ -12,6 +12,7 @@ namespace MICExtended
         MainFormViewModel _viewModel = new MainFormViewModel();
         //ConfigurationModel _config = new ConfigurationModel();
 
+        #region Initialization
         public Form1(AppLogic al) {
             InitializeComponent();
             _al = al;
@@ -26,7 +27,6 @@ namespace MICExtended
             this.FormClosing += new FormClosingEventHandler(Form1_FormClosing);
         }
 
-        #region UI Setup
         private async Task Initialize() {
             var config = await _al.LoadConfiguration();
 
@@ -40,7 +40,6 @@ namespace MICExtended
             UpdateFileSelectionMinParameter();
             UpdateFileSelectionMinParameterValue();
         }
-
         #endregion
 
         #region UI Updater
@@ -64,8 +63,10 @@ namespace MICExtended
 
         private void UpdateDstList() {
             var dstViewItems = _viewModel.DstFiles.Select(a => {
-                var lv = new ListViewItem(a.FilePath.Replace(_viewModel.SrcDir, String.Empty));
+                var lv = new ListViewItem(a.FilePath.Replace(_viewModel.DstDir, String.Empty));
                 lv.SubItems.Add(a.SizeDisplay);
+                lv.SubItems.Add(a.DimensionDisplay);
+                lv.SubItems.Add(a.BytesPer100PixelDisplay);
                 return lv;
             }).ToArray();
             listViewDst.Items.Clear();
@@ -149,8 +150,7 @@ namespace MICExtended
             _al.ClearCache();
 
             UpdateDirectoryTxt();
-            ReloadSrcFiles();
-            ReloadDstFiles();
+            ReloadFiles();
         }
 
         private void btnOpenDst_Click(object sender, EventArgs e) {
@@ -160,7 +160,6 @@ namespace MICExtended
             _viewModel.DstFiles = _al.GetCompressedFilePreview(_viewModel.SrcDir, _viewModel.DstDir, _viewModel.SrcFiles, _viewModel.Compression).ToList();
             UpdateDirectoryTxt();
             ReloadDstFiles();
-            //UpdateDstList();
         }
 
         private async void btnCompress_Click(object sender, EventArgs e) {
@@ -168,6 +167,9 @@ namespace MICExtended
             progress.ProgressChanged += ProgressChanged;
 
             await _al.CompressFiles(_viewModel.SrcFiles, _viewModel.DstFiles, _viewModel.Compression, progress);
+
+            _viewModel.DstFiles = _al.LoadFileDetail(_viewModel.DstFiles).ToList();
+            UpdateDstList();
         }
 
         private void trkQuality_Scroll(object sender, EventArgs e) {
@@ -223,7 +225,7 @@ namespace MICExtended
             _viewModel.Selection.CheckAllFile = _viewModel.Selection.FileTypes.Count == clFileType.Items.Count;
 
             UpdateChkFileTypeAll();
-            ReloadSrcFiles();
+            ReloadFiles();
         }
 
         private void chkFileTypeAll_Click(object sender, EventArgs e) {
@@ -233,7 +235,7 @@ namespace MICExtended
                 : new List<string>();
 
             UpdateClFileType();
-            ReloadSrcFiles();
+            ReloadFiles();
         }
 
         private void minParameter_CheckedChanged(object sender, EventArgs e) {
@@ -241,14 +243,17 @@ namespace MICExtended
             _viewModel.Selection.UseMinB100 = chkMinB100.Checked;
 
             UpdateFileSelectionMinParameter();
-            ReloadSrcFiles();
+            ReloadFiles();
         }
 
-        private void minParameter_ValueChanged(object sender, EventArgs e) {
+        private void numMinSize_ValueChanged(object sender, EventArgs e) {
             _viewModel.Selection.MinSize = (int)numMinSize.Value;
-            _viewModel.Selection.MinB100 = (int)numMinB100.Value;
+            ReloadFiles();
+        }
 
-            ReloadSrcFiles();
+        private void numMinB100_ValueChanged(object sender, EventArgs e) {
+            _viewModel.Selection.MinB100 = (int)numMinB100.Value;
+            ReloadFiles();
         }
 
         private async void Form1_FormClosing(object? sender, FormClosingEventArgs e) {
@@ -268,10 +273,15 @@ namespace MICExtended
             return string.Empty;
         }
 
+        private void ReloadFiles() {
+            ReloadSrcFiles();
+            ReloadDstFiles();
+        }
+
         private void ReloadSrcFiles() {
             if(string.IsNullOrEmpty(_viewModel.SrcDir)) return;
 
-            _viewModel.SrcFiles = _al.GetFileViewModels(_viewModel.SrcDir, _viewModel.Selection.FileTypes).ToList();
+            _viewModel.SrcFiles = _al.GetFileViewModels(_viewModel.SrcDir, _viewModel.Selection).ToList();
             UpdateSrcList();
         }
 

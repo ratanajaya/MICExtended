@@ -18,6 +18,7 @@ namespace MICExtended.Service
         bool FileExist(string path);
         Task<string> ReadAllText(string path);
         Task WriteAllText(string path, string text);
+        Stream GetStream(string path);
     }
 
     public class IoWrapper : IIoWapper
@@ -44,6 +45,10 @@ namespace MICExtended.Service
 
         public Task WriteAllText(string path, string text) { 
             return File.WriteAllTextAsync(path, text);
+        }
+
+        public Stream GetStream(string path) {
+            return new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
         }
     }
 }
