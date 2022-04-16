@@ -217,7 +217,7 @@
             this.numMinB100.Name = "numMinB100";
             this.numMinB100.Size = new System.Drawing.Size(88, 23);
             this.numMinB100.TabIndex = 15;
-            this.numMinB100.ValueChanged += new System.EventHandler(this.minParameter_ValueChanged);
+            this.numMinB100.ValueChanged += new System.EventHandler(this.numMinB100_ValueChanged);
             // 
             // numMinSize
             // 
@@ -230,7 +230,7 @@
             this.numMinSize.Name = "numMinSize";
             this.numMinSize.Size = new System.Drawing.Size(88, 23);
             this.numMinSize.TabIndex = 10;
-            this.numMinSize.ValueChanged += new System.EventHandler(this.minParameter_ValueChanged);
+            this.numMinSize.ValueChanged += new System.EventHandler(this.numMinSize_ValueChanged);
             // 
             // chkMinB100
             // 
@@ -241,7 +241,7 @@
             this.chkMinB100.TabIndex = 14;
             this.chkMinB100.Text = "Min B/100px";
             this.chkMinB100.UseVisualStyleBackColor = true;
-            this.chkMinB100.CheckedChanged += new System.EventHandler(this.minParameter_CheckedChanged);
+            this.chkMinB100.MouseClick += new System.Windows.Forms.MouseEventHandler(this.minParameter_CheckedChanged);
             // 
             // chkMinSize
             // 
@@ -252,7 +252,7 @@
             this.chkMinSize.TabIndex = 13;
             this.chkMinSize.Text = "Min Size (Kb)";
             this.chkMinSize.UseVisualStyleBackColor = true;
-            this.chkMinSize.CheckedChanged += new System.EventHandler(this.minParameter_CheckedChanged);
+            this.chkMinSize.MouseClick += new System.Windows.Forms.MouseEventHandler(this.minParameter_CheckedChanged);
             // 
             // clFileType
             // 

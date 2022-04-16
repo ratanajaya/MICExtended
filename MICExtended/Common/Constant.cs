@@ -15,25 +15,25 @@ namespace MICExtended.Common
         }
         public static class Extension
         {
-            public const string JPG = ".JPG";
-            public const string JPEG = ".JPEG";
-            public const string PNG = ".PNG";
+            public const string JPG = ".jpg";
+            public const string JPEG = ".jpeg";
+            public const string PNG = ".png";
 
             public static readonly ReadOnlyCollection<string> ALLOWED = new ReadOnlyCollection<string> (
-                new[] { 
-                    ".JPG" , ".JPEG", ".PNG" , ".BMP" , ".RLE" , ".DIB" , ".GIF" , ".TIF" , ".TIFF", ".WMF" ,
-                    ".3FR" , ".ARI" , ".ARW" , ".BAY" , ".CRW" , ".CR2" , ".CAP" , ".DCS" , ".DCR" , ".DNG" ,
-                    ".DRF" , ".EIP" , ".ERF" , ".FFF" , ".IIQ" , ".K25" , ".KDC" , ".MDC" , ".MEF" , ".MOS" ,
-                    ".MRW" , ".NEF" , ".NRW" , ".OBM" , ".ORF" , ".PEF" , ".PTX" , ".PXN" , ".R3D" , ".RAF" ,
-                    ".RAW" , ".RWL" , ".RW2" , ".RWZ" , ".SR2" , ".SRF" , ".SRW" , ".X3F"
+                new[] {
+                    ".jpg" , ".jpeg", ".png" , ".bmp" , ".rle" , ".dib" , ".gif" , ".tif" , ".tiff", ".wmf" ,
+                    ".3fr" , ".ari" , ".arw" , ".bay" , ".crw" , ".cr2" , ".cap" , ".dcs" , ".dcr" , ".dng" ,
+                    ".drf" , ".eip" , ".erf" , ".fff" , ".iiq" , ".k25" , ".kdc" , ".mdc" , ".mef" , ".mos" ,
+                    ".mrw" , ".nef" , ".nrw" , ".obm" , ".orf" , ".pef" , ".ptx" , ".pxn" , ".r3d" , ".raf" ,
+                    ".raw" , ".rwl" , ".rw2" , ".rwz" , ".sr2" , ".srf" , ".srw" , ".x3f"
                 });
 
             public static readonly ReadOnlyCollection<string> ALLOWED_RAW = new ReadOnlyCollection<string>(
                 new[] {
-                    ".3FR" , ".ARI" , ".ARW" , ".BAY" , ".CRW" , ".CR2" , ".CAP" , ".DCS" , ".DCR" , ".DNG" ,
-                    ".DRF" , ".EIP" , ".ERF" , ".FFF" , ".IIQ" , ".K25" , ".KDC" , ".MDC" , ".MEF" , ".MOS" ,
-                    ".MRW" , ".NEF" , ".NRW" , ".OBM" , ".ORF" , ".PEF" , ".PTX" , ".PXN" , ".R3D" , ".RAF" ,
-                    ".RAW" , ".RWL" , ".RW2" , ".RWZ" , ".SR2" , ".SRF" , ".SRW" , ".X3F"
+                    ".3fr" , ".ari" , ".arw" , ".bay" , ".crw" , ".cr2" , ".cap" , ".dcs" , ".dcr" , ".dng" ,
+                    ".drf" , ".eip" , ".erf" , ".fff" , ".iiq" , ".k25" , ".kdc" , ".mdc" , ".mef" , ".mos" ,
+                    ".mrw" , ".nef" , ".nrw" , ".obm" , ".orf" , ".pef" , ".ptx" , ".pxn" , ".r3d" , ".raf" ,
+                    ".raw" , ".rwl" , ".rw2" , ".rwz" , ".sr2" , ".srf" , ".srw" , ".x3f"
                 });
         }
     }

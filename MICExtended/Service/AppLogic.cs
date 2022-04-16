@@ -16,7 +16,7 @@ namespace MICExtended.Service
         private ImageCompressor _ic;
         private string _configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json");
 
-        private Dictionary<string, IEnumerable<FileViewModel>> _fileCache = new Dictionary<string, IEnumerable<FileViewModel>>();
+        private Dictionary<string, List<FileViewModel>> _fileCache = new Dictionary<string, List<FileViewModel>>();
 
         public AppLogic(IIoWapper io, ImageCompressor ic) {
             _io = io;
@@ -61,8 +61,8 @@ namespace MICExtended.Service
         public IEnumerable<FileViewModel> GetCompressedFilePreview(string srcPath, string dstPath, List<FileViewModel> sourceFiles, CompressionCondition selectionCondition) {
             var result = sourceFiles.Select(a => new FileViewModel {
                 FilePath = Path.Combine(dstPath, 
-                    selectionCondition.ConvertTo == SupportedMimeType.JPEG ? Path.ChangeExtension(a.RelativePath, Constant.Extension.JPG.ToLower()) : 
-                    selectionCondition.ConvertTo == SupportedMimeType.PNG ? Path.ChangeExtension(a.RelativePath, Constant.Extension.PNG.ToLower()) :
+                    selectionCondition.ConvertTo == SupportedMimeType.JPEG ? Path.ChangeExtension(a.RelativePath, Constant.Extension.JPG) : 
+                    selectionCondition.ConvertTo == SupportedMimeType.PNG ? Path.ChangeExtension(a.RelativePath, Constant.Extension.PNG) :
                     a.RelativePath),
                 Size = null
             });
@@ -71,22 +71,11 @@ namespace MICExtended.Service
         }
 
         public IEnumerable<FileViewModel> GetFileViewModels(string path, SelectionCondition selection) {
-            var allData = new Func<IEnumerable<FileViewModel>>(() => {
+            var allData = new Func<List<FileViewModel>>(() => {
                 if(_fileCache.ContainsKey(path)) return _fileCache[path];
 
                 var filePaths = GetSuitableFilePaths(path);
-                var fileVms = filePaths.Select(a => {
-                    var fi = new FileInfo(a);
-                    var img = Image.FromFile(a);
-                    return new FileViewModel {
-                        RootPath = path,
-                        FilePath = fi.FullName,
-                        Extension = fi.Extension,
-                        Size = fi.Length,
-                        Height = img.Height,
-                        Width = img.Width,
-                    };
-                });
+                var fileVms = filePaths.Select(a => GetFileViewModel(a, path)).ToList();
 
                 _fileCache.Add(path, fileVms);
 
@@ -96,7 +85,7 @@ namespace MICExtended.Service
             var selectedData = allData.Where(a => 
                 selection.FileTypes.Any(b => b.Equals(a.Extension, StringComparison.OrdinalIgnoreCase)) &&
                 (!selection.UseMinB100 || a.BytesPer100Pixel >= selection.MinB100) &&
-                (!selection.UseMinSize || a.Size >= selection.MinSize)
+                (!selection.UseMinSize || a.Size >= selection.MinSize * 1024)
             );
 
             return selectedData;
@@ -106,16 +95,36 @@ namespace MICExtended.Service
             string[] subDirs = _io.GetDirectories(path);
             var filePathsFromSubdir = subDirs.SelectMany(s => GetSuitableFilePaths(s));
 
-            var filePaths = Directory.EnumerateFiles(path, "*.*", SearchOption.TopDirectoryOnly)
-                .Where(f => Constant.Extension.ALLOWED.Any(a => a.Equals(Path.GetExtension(f), StringComparison.OrdinalIgnoreCase)))
-                .ToList();
+            var filePaths = Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories)
+                .Where(f => Constant.Extension.ALLOWED.Any(a => a.Equals(Path.GetExtension(f), StringComparison.OrdinalIgnoreCase)));
 
-            var fileNames = filePaths.Select(f => Path.GetFileName(f));
-            var sortedFileNames = fileNames.OrderByAlphaNumeric(f => f);
-            var sortedFilePaths = fileNames.Select(f => Path.Combine(path, f));
-            var combinedFilePaths = filePathsFromSubdir.Concat(sortedFilePaths).ToList();
+            //var filePaths = Constant.Extension.ALLOWED.AsParallel()
+            //    .SelectMany(a => Directory.EnumerateFiles(path, a, SearchOption.TopDirectoryOnly)).AsEnumerable();
 
-            return combinedFilePaths;
+            //.ToList();
+
+            //var fileNames = filePaths.Select(f => Path.GetFileName(f));
+            //var sortedFileNames = fileNames.OrderByAlphaNumeric(f => f);
+            //var sortedFilePaths = fileNames.Select(f => Path.Combine(path, f));
+            //var combinedFilePaths = filePathsFromSubdir.Concat(sortedFilePaths).ToList();
+
+            return filePaths;
+        }
+
+        private FileViewModel GetFileViewModel(string path, string rootPath) {
+            //var fi = new FileInfo(path);
+            using(var fileStream = _io.GetStream(path)) {
+                using(var img = Image.FromStream(fileStream, false, false)) {
+                    return new FileViewModel {
+                        RootPath = rootPath,
+                        FilePath = path,
+                        Extension = Path.GetExtension(path),
+                        Size = fileStream.Length,
+                        Height = img.Height,
+                        Width = img.Width,
+                    };
+                }
+            }
         }
 
         public Task CompressFiles(List<FileViewModel> srcFiles, List<FileViewModel> dstFiles, CompressionCondition compressionCondition, IProgress<ProgressReport> progress) {
@@ -147,6 +156,10 @@ namespace MICExtended.Service
                     TaskEndMessage = $"{taskCount} images has been compressed"
                 });
             });
+        }
+
+        public IEnumerable<FileViewModel> LoadFileDetail(List<FileViewModel> files) {
+            return files.Select(a => GetFileViewModel(a.FilePath, a.RootPath));
         }
 
         public void ClearCache() {
