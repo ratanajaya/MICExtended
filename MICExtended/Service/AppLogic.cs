@@ -85,37 +85,48 @@ namespace MICExtended.Service
             return result;
         }
 
-        public List<FileModel> GetFileViewModels(string path, SelectionCondition selection, IProgress<ProgressReport> progress) {
+        public async Task<List<FileModel>> GetFileViewModels(string path, SelectionCondition selection, IProgress<ProgressReport> progress) {
             int taskCount = 2;
-            progress.Report(new ProgressReport {
-                CurrentTask = $"Lorem ipsum.",
-                Step = 0,
-                TaskCount = taskCount,
-            });
 
-            var allData = new Func<IProgress<ProgressReport>, List<FileModel>>((lProgress) => {
+            var allData = await Task.Run(() => {
                 if(_fileCache.ContainsKey(path)) return _fileCache[path];
 
-                lProgress.Report(new ProgressReport {
+                progress.Report(new ProgressReport {
                     CurrentTask = $"Looking up image files...",
                     Step = 0,
                     TaskCount = taskCount,
                 });
 
                 var filePaths = GetSuitableFilePaths(path).ToList();
+                taskCount += filePaths.Count;
 
-                lProgress.Report(new ProgressReport {
+                FileModel[] result = new FileModel[filePaths.Count];
+
+                progress.Report(new ProgressReport {
                     CurrentTask = $"Found {filePaths.Count} images. Loading metadata...",
                     Step = 1,
                     TaskCount = taskCount,
                 });
 
-                var fileVms = filePaths.AsParallel().Select(a => GetFileViewModel(a, path)).ToList();
+                int parallelStep = 1;
 
-                _fileCache.Add(path, fileVms);
+                Parallel.For(0, filePaths.Count, new ParallelOptions { MaxDegreeOfParallelism = 4 }, (i, state) => {
+                    result[i] = GetFileViewModel(filePaths[i], path);
+
+                    var currentStep = Interlocked.Increment(ref parallelStep);
+                    if(currentStep % 200 == 0) { //Updating too fast will cause winForm label to fail
+                        progress.Report(new ProgressReport {
+                            CurrentTask = $"Compressing {filePaths[i]}...",
+                            Step = currentStep,
+                            TaskCount = taskCount,
+                        });
+                    }
+                });
+
+                _fileCache.Add(path, result.ToList());
 
                 return _fileCache[path];
-            })(progress);
+            });
 
             var selectedData = allData.Where(a => 
                 selection.FileTypes.Any(b => b.Equals(a.Extension, StringComparison.OrdinalIgnoreCase)) &&
@@ -200,8 +211,8 @@ namespace MICExtended.Service
                 }
 
                 lock(parallelReport) {
-                    parallelReport.CurrentTask = $"Compressing files... {src.Name} compressed";
-                    parallelReport.Step += 1;
+                    parallelReport.CurrentTask = $"Compressed {src.Name}...";
+                    parallelReport.Step++;
                     progress.Report(parallelReport);
                 }
             });
