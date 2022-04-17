@@ -12,6 +12,10 @@ using MICExtended.Common;
 
 namespace MICExtended.Service
 {
+    /// <summary>
+    /// Taken from yugee's Mass Image Compressor
+    /// https://sourceforge.net/p/icompress/code/
+    /// </summary>
     public class ImageCompressor
     {
         #region CompressDirectory

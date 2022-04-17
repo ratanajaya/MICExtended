@@ -19,6 +19,7 @@ namespace MICExtended.Model
         }
         public string CurrentTask { get; set; } = "";
         public bool TaskEnd { get; set; }
+        public bool ShowPopup { get; set; }
         public string TaskEndMessage { get; set; } = "";
     }
 }

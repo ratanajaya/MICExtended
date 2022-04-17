@@ -9,8 +9,8 @@ namespace MICExtended
     public partial class Form1 : Form
     {
         AppLogic _al;
-        MainFormViewModel _viewModel = new MainFormViewModel();
-        //ConfigurationModel _config = new ConfigurationModel();
+        Form1ViewModel? _viewModel;
+        Progress<ProgressReport>? _progress;
 
         #region Initialization
         public Form1(AppLogic al) {
@@ -19,19 +19,20 @@ namespace MICExtended
         }
 
         private async void Form1_Load(object sender, EventArgs e) {
-            await Initialize();
+            var config = await _al.LoadState();
+            _viewModel = new Form1ViewModel {
+                Selection = config.Selection,
+                Compression = config.Compression,
+            };
 
-            UpdateCompressionParameter();
-            UpdateProgressBar();
-
-            this.FormClosing += new FormClosingEventHandler(Form1_FormClosing);
-        }
-
-        private async Task Initialize() {
-            var config = await _al.LoadConfiguration();
-
-            _viewModel.Selection = config.Selection;
-            _viewModel.Compression = config.Compression;
+            _progress = new Progress<ProgressReport>();
+            _progress.ProgressChanged += (sender, report) => {
+                _viewModel.ProgressReport = report;
+                UpdateProgressBar();
+            };
+            this.FormClosing += new FormClosingEventHandler(async (sender, report) => {
+                await _al.SaveState(_viewModel);
+            });
 
             clFileType.Items.AddRange(Constant.Extension.ALLOWED.ToArray());
             clFileType.CheckOnClick = true;
@@ -39,6 +40,9 @@ namespace MICExtended
             UpdateClFileType();
             UpdateFileSelectionMinParameter();
             UpdateFileSelectionMinParameterValue();
+
+            UpdateCompressionParameter();
+            UpdateProgressBar();
         }
         #endregion
 
@@ -125,23 +129,27 @@ namespace MICExtended
             barProgress.Update();
 
             if(_viewModel.ProgressReport.TaskEnd) {
-                var confirmResult = MessageBox.Show(_viewModel.ProgressReport.TaskEndMessage, "Success", MessageBoxButtons.OK);
-                if(confirmResult == DialogResult.OK) {
-                    _viewModel.ProgressReport = new ProgressReport();
-                    UpdateProgressBar();
+                if(_viewModel.ProgressReport.ShowPopup) {
+                    var confirmResult = MessageBox.Show(_viewModel.ProgressReport.TaskEndMessage, "Success", MessageBoxButtons.OK);
+                    if(confirmResult == DialogResult.OK) { }
                 }
+
+                _viewModel.ProgressReport = new ProgressReport {
+                    CurrentTask = _viewModel.ProgressReport.TaskEndMessage
+                };
+                UpdateProgressBar();
             }
         }
 
-        private void ProgressChanged(object? sender, ProgressReport report) {
-            _viewModel.ProgressReport = report;
+        //private void ProgressChanged(object? sender, ProgressReport report) {
+        //    _viewModel.ProgressReport = report;
 
-            UpdateProgressBar();
-        }
+        //    UpdateProgressBar();
+        //}
         #endregion
 
         #region Event Handlers
-        private void btnOpenSrc_Click(object sender, EventArgs e) {
+        private async void btnOpenSrc_Click(object sender, EventArgs e) {
             _viewModel.SrcDir = OpenDirectorySelector();
             if(string.IsNullOrEmpty(_viewModel.SrcDir)) return;
 
@@ -150,7 +158,7 @@ namespace MICExtended
             _al.ClearCache();
 
             UpdateDirectoryTxt();
-            ReloadFiles();
+            await ReloadFiles();
         }
 
         private void btnOpenDst_Click(object sender, EventArgs e) {
@@ -163,10 +171,7 @@ namespace MICExtended
         }
 
         private async void btnCompress_Click(object sender, EventArgs e) {
-            var progress = new Progress<ProgressReport>();
-            progress.ProgressChanged += ProgressChanged;
-
-            await _al.CompressFiles(_viewModel.SrcFiles, _viewModel.DstFiles, _viewModel.Compression, progress);
+            await _al.CompressFiles(_viewModel.SrcFiles, _viewModel.DstFiles, _viewModel.Compression, _progress);
 
             _viewModel.DstFiles = _al.LoadFileDetail(_viewModel.DstFiles).ToList();
             UpdateDstList();
@@ -219,45 +224,41 @@ namespace MICExtended
             UpdateCompressionParameter();
         }
 
-        private void clFileType_SelectedIndexChanged(object sender, EventArgs e) {
+        private async void clFileType_SelectedIndexChanged(object sender, EventArgs e) {
             _viewModel.Selection.FileTypes = clFileType.CheckedItems.Cast<object>().Select(a => clFileType.GetItemText(a)).ToList();
 
             _viewModel.Selection.CheckAllFile = _viewModel.Selection.FileTypes.Count == clFileType.Items.Count;
 
             UpdateChkFileTypeAll();
-            ReloadFiles();
+            await ReloadFiles();
         }
 
-        private void chkFileTypeAll_Click(object sender, EventArgs e) {
+        private async void chkFileTypeAll_Click(object sender, EventArgs e) {
             _viewModel.Selection.CheckAllFile = chkFileTypeAll.Checked;
             _viewModel.Selection.FileTypes = _viewModel.Selection.CheckAllFile
                 ? clFileType.Items.Cast<object>().Select(a => clFileType.GetItemText(a)).ToList()
                 : new List<string>();
 
             UpdateClFileType();
-            ReloadFiles();
+            await ReloadFiles();
         }
 
-        private void minParameter_CheckedChanged(object sender, EventArgs e) {
+        private async void minParameter_CheckedChanged(object sender, EventArgs e) {
             _viewModel.Selection.UseMinSize = chkMinSize.Checked;
             _viewModel.Selection.UseMinB100 = chkMinB100.Checked;
 
             UpdateFileSelectionMinParameter();
-            ReloadFiles();
+            await ReloadFiles();
         }
 
-        private void numMinSize_ValueChanged(object sender, EventArgs e) {
+        private async void numMinSize_ValueChanged(object sender, EventArgs e) {
             _viewModel.Selection.MinSize = (int)numMinSize.Value;
-            ReloadFiles();
+            await ReloadFiles();
         }
 
-        private void numMinB100_ValueChanged(object sender, EventArgs e) {
+        private async void numMinB100_ValueChanged(object sender, EventArgs e) {
             _viewModel.Selection.MinB100 = (int)numMinB100.Value;
-            ReloadFiles();
-        }
-
-        private async void Form1_FormClosing(object? sender, FormClosingEventArgs e) {
-            await _al.SaveConfiguration(_viewModel);
+            await ReloadFiles();
         }
         #endregion
 
@@ -273,15 +274,15 @@ namespace MICExtended
             return string.Empty;
         }
 
-        private void ReloadFiles() {
-            ReloadSrcFiles();
+        private async Task ReloadFiles() {
+            await ReloadSrcFiles();
             ReloadDstFiles();
         }
 
-        private void ReloadSrcFiles() {
+        private async Task ReloadSrcFiles() {
             if(string.IsNullOrEmpty(_viewModel.SrcDir)) return;
 
-            _viewModel.SrcFiles = _al.GetFileViewModels(_viewModel.SrcDir, _viewModel.Selection).ToList();
+            _viewModel.SrcFiles = await Task.Run(() => _al.GetFileViewModels(_viewModel.SrcDir, _viewModel.Selection, _progress));
             UpdateSrcList();
         }
 
