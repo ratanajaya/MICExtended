@@ -171,35 +171,48 @@ namespace MICExtended.Service
             }
         }
 
-        public Task CompressFiles(List<FileModel> srcFiles, List<FileModel> dstFiles, CompressionCondition compressionCondition, IProgress<ProgressReport> progress) {
-            if(srcFiles.Count != dstFiles.Count) throw new InvalidDataException("srcFiles and dstFiles have different length");
+        public void CompressFiles(List<FileModel> srcFiles, List<FileModel> dstFiles, CompressionCondition compressionCondition, IProgress<ProgressReport> progress) {
+            if(srcFiles.Count != dstFiles.Count) { throw new InvalidDataException("srcFiles and dstFiles have different length"); }
 
-            return Task.Run(() => {
-                var taskCount = srcFiles.Count;
-                for(int i = 0; i < taskCount; i++) {
-                    progress.Report(new ProgressReport {
-                        CurrentTask = $"Compressing {srcFiles[i].Name}...",
-                        Step = i,
-                        TaskCount = taskCount,
-                    });
+            var dirNames = dstFiles.Select(a => Path.GetDirectoryName(a.FilePath)).Distinct().ToList();
+            dirNames.ForEach(dir => {
+                _io.CreateDirectory(dir);
+            });
 
-                    var src = srcFiles[i];
-                    var dst = dstFiles[i];
+            var taskCount = srcFiles.Count + 1;
+            var parallelReport = new ProgressReport {
+                CurrentTask = "Compressing files..",
+                Step = 0,
+                TaskCount = taskCount,
+            };
+            progress.Report(parallelReport);
 
-                    var dstDir = Path.GetDirectoryName(dst.FilePath);
-                    _io.CreateDirectory(dstDir);
-
+            Parallel.For(0, srcFiles.Count, (i, state) => {
+                //DO NOT perform operation that may target toward the same filesystem entity as it can cause race condition
+                //Performing _io.CreateDirectory() here can cause race condition
+                var src = srcFiles[i];
+                var dst = dstFiles[i];
+                try {
                     _ic.CompressImage(src.FilePath, dst.FilePath, compressionCondition.Quality, null, compressionCondition.ConvertTo);
                 }
+                catch(Exception ex) {
+                    _log.Error($"CompressFiles | {src.FilePath} | {dst.FilePath} | {ex.Message}");
+                }
 
-                progress.Report(new ProgressReport {
-                    CurrentTask = $"Finished compressing",
-                    Step = taskCount,
-                    TaskCount = taskCount,
-                    TaskEnd = true,
-                    ShowPopup = true,
-                    TaskEndMessage = $"{taskCount} images has been compressed"
-                });
+                lock(parallelReport) {
+                    parallelReport.CurrentTask = $"Compressing files... {src.Name} compressed";
+                    parallelReport.Step += 1;
+                    progress.Report(parallelReport);
+                }
+            });
+
+            progress.Report(new ProgressReport {
+                CurrentTask = $"Finished compressing",
+                Step = taskCount,
+                TaskCount = taskCount,
+                TaskEnd = true,
+                ShowPopup = true,
+                TaskEndMessage = $"{taskCount} images has been compressed"
             });
         }
 

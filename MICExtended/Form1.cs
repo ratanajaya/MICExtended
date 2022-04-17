@@ -169,7 +169,7 @@ namespace MICExtended
         }
 
         private async void btnCompress_Click(object sender, EventArgs e) {
-            await _al.CompressFiles(_viewModel.SrcFiles, _viewModel.DstFiles, _viewModel.Compression, _progress);
+            await Task.Run(() => _al.CompressFiles(_viewModel.SrcFiles, _viewModel.DstFiles, _viewModel.Compression, _progress));
 
             _viewModel.DstFiles = _al.LoadFileDetail(_viewModel.DstFiles).ToList();
             UpdateDstList();
