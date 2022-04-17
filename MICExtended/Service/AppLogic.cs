@@ -109,14 +109,17 @@ namespace MICExtended.Service
                 });
 
                 int parallelStep = 1;
+                long lastTick = DateTime.Now.Ticks;
 
-                Parallel.For(0, filePaths.Count, new ParallelOptions { MaxDegreeOfParallelism = 4 }, (i, state) => {
+                Parallel.For(0, filePaths.Count, new ParallelOptions { MaxDegreeOfParallelism = 8 }, (i, state) => {
                     result[i] = GetFileViewModel(filePaths[i], path);
 
                     var currentStep = Interlocked.Increment(ref parallelStep);
-                    if(currentStep % 200 == 0) { //Updating too fast will cause winForm label to fail
+                    long currentTick = DateTime.Now.Ticks;
+                    if(currentTick - lastTick > 2000000) { //Updating too fast will cause winForm label to fail
+                        Interlocked.Exchange(ref lastTick, currentTick);
                         progress.Report(new ProgressReport {
-                            CurrentTask = $"Compressing {filePaths[i]}...",
+                            CurrentTask = $"Loading {filePaths[i]}...",
                             Step = currentStep,
                             TaskCount = taskCount,
                         });

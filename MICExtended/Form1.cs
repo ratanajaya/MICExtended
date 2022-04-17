@@ -144,25 +144,6 @@ namespace MICExtended
                 await UpdateProgressBar();
             }
         }
-
-        private void UpdateProgressBar2() {
-            lblProgress.Text = _viewModel.ProgressReport.CurrentTask;
-            barProgress.Value = _viewModel.ProgressReport.StepPct;
-            barProgress.Update();
-
-            if(_viewModel.ProgressReport.TaskEnd) {
-                if(_viewModel.ProgressReport.ShowPopup) {
-                    var confirmResult = MessageBox.Show(_viewModel.ProgressReport.TaskEndMessage, "Success", MessageBoxButtons.OK);
-                    if(confirmResult == DialogResult.OK) { }
-                }
-
-                _viewModel.ProgressReport = new ProgressReport {
-                    CurrentTask = _viewModel.ProgressReport.TaskEndMessage
-                };
-
-                UpdateProgressBar2();
-            }
-        }
         #endregion
 
         #region Event Handlers
@@ -298,12 +279,6 @@ namespace MICExtended
 
         private async Task ReloadSrcFiles() {
             if(string.IsNullOrEmpty(_viewModel.SrcDir)) return;
-
-            var localProg = new Progress<ProgressReport>();
-            localProg.ProgressChanged += (s, report) => {
-                _viewModel.ProgressReport = report;
-                UpdateProgressBar2();
-            };
 
             _viewModel.SrcFiles = await _al.GetFileViewModels(_viewModel.SrcDir, _viewModel.Selection, _progress);
             UpdateSrcList();
