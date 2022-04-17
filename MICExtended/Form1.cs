@@ -9,10 +9,11 @@ namespace MICExtended
     public partial class Form1 : Form
     {
         AppLogic _al;
-        Form1ViewModel? _viewModel;
-        Progress<ProgressReport>? _progress;
+        Form1ViewModel _viewModel;
+        Progress<ProgressReport> _progress;
 
         #region Initialization
+        #pragma warning disable CS8618
         public Form1(AppLogic al) {
             InitializeComponent();
             _al = al;
@@ -26,9 +27,9 @@ namespace MICExtended
             };
 
             _progress = new Progress<ProgressReport>();
-            _progress.ProgressChanged += (sender, report) => {
+            _progress.ProgressChanged += async (sender, report) => {
                 _viewModel.ProgressReport = report;
-                UpdateProgressBar();
+                await UpdateProgressBar();
             };
             this.FormClosing += new FormClosingEventHandler(async (sender, report) => {
                 await _al.SaveState(_viewModel);
@@ -42,7 +43,7 @@ namespace MICExtended
             UpdateFileSelectionMinParameterValue();
 
             UpdateCompressionParameter();
-            UpdateProgressBar();
+            await UpdateProgressBar();
         }
         #endregion
 
@@ -123,7 +124,7 @@ namespace MICExtended
             numMinB100.Value = _viewModel.Selection.MinB100;
         }
 
-        private void UpdateProgressBar() {
+        private async Task UpdateProgressBar() {
             lblProgress.Text = _viewModel.ProgressReport.CurrentTask;
             barProgress.Value = _viewModel.ProgressReport.StepPct;
             barProgress.Update();
@@ -133,19 +134,16 @@ namespace MICExtended
                     var confirmResult = MessageBox.Show(_viewModel.ProgressReport.TaskEndMessage, "Success", MessageBoxButtons.OK);
                     if(confirmResult == DialogResult.OK) { }
                 }
+                else
+                    await Task.Delay(1000);
 
                 _viewModel.ProgressReport = new ProgressReport {
                     CurrentTask = _viewModel.ProgressReport.TaskEndMessage
                 };
-                UpdateProgressBar();
+
+                await UpdateProgressBar();
             }
         }
-
-        //private void ProgressChanged(object? sender, ProgressReport report) {
-        //    _viewModel.ProgressReport = report;
-
-        //    UpdateProgressBar();
-        //}
         #endregion
 
         #region Event Handlers
@@ -165,7 +163,7 @@ namespace MICExtended
             _viewModel.DstDir = OpenDirectorySelector();
             if(string.IsNullOrEmpty(_viewModel.DstDir)) return;
 
-            _viewModel.DstFiles = _al.GetCompressedFilePreview(_viewModel.SrcDir, _viewModel.DstDir, _viewModel.SrcFiles, _viewModel.Compression).ToList();
+            _viewModel.DstFiles = _al.GetCompressedFilePreview(_viewModel.SrcDir, _viewModel.DstDir, _viewModel.SrcFiles, _viewModel.Compression);
             UpdateDirectoryTxt();
             ReloadDstFiles();
         }
@@ -289,7 +287,7 @@ namespace MICExtended
         private void ReloadDstFiles() {
             if(string.IsNullOrEmpty(_viewModel.DstDir)) return;
 
-            _viewModel.DstFiles = _al.GetCompressedFilePreview(_viewModel.SrcDir, _viewModel.DstDir, _viewModel.SrcFiles, _viewModel.Compression).ToList();
+            _viewModel.DstFiles = _al.GetCompressedFilePreview(_viewModel.SrcDir, _viewModel.DstDir, _viewModel.SrcFiles, _viewModel.Compression);
             UpdateDstList();
         }
         #endregion

@@ -73,14 +73,14 @@ namespace MICExtended.Service
         }
         #endregion
 
-        public IEnumerable<FileModel> GetCompressedFilePreview(string srcPath, string dstPath, List<FileModel> sourceFiles, CompressionCondition selectionCondition) {
-            var result = sourceFiles.Select(a => new FileModel {
-                FilePath = Path.Combine(dstPath, 
-                    selectionCondition.ConvertTo == SupportedMimeType.JPEG ? Path.ChangeExtension(a.RelativePath, Constant.Extension.JPG) : 
+        public List<FileModel> GetCompressedFilePreview(string srcPath, string dstPath, List<FileModel> sourceFiles, CompressionCondition selectionCondition) {
+            var result = sourceFiles.AsParallel().Select(a => new FileModel {
+                FilePath = Path.Combine(dstPath,
+                    selectionCondition.ConvertTo == SupportedMimeType.JPEG ? Path.ChangeExtension(a.RelativePath, Constant.Extension.JPG) :
                     selectionCondition.ConvertTo == SupportedMimeType.PNG ? Path.ChangeExtension(a.RelativePath, Constant.Extension.PNG) :
                     a.RelativePath),
                 Size = null
-            });
+            }).ToList();
 
             return result;
         }
@@ -124,6 +124,7 @@ namespace MICExtended.Service
             ).ToList();
 
             progress.Report(new ProgressReport {
+                CurrentTask = $"Loading finished. {selectedData.Count()} images found",
                 TaskEndMessage = $"Loading finished. {selectedData.Count()} images found",
                 TaskEnd = true,
                 Step = taskCount,
