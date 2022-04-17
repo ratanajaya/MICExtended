@@ -1,5 +1,7 @@
+using MICExtended.Abstraction;
 using MICExtended.Service;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 
 namespace MICExtended
 {
@@ -17,6 +19,9 @@ namespace MICExtended
             services.AddTransient<IIoWapper, IoWrapper>();
             services.AddTransient<ImageCompressor>();
             services.AddTransient<Form1>();
+            services.AddSingleton<ILogger>(new LoggerConfiguration()
+                        .WriteTo.File(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "log/log-.txt"), rollingInterval: RollingInterval.Day, retainedFileCountLimit: 10)
+                        .CreateLogger());
 
             ServiceProvider = services.BuildServiceProvider();
 

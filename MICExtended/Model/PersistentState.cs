@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MICExtended.Model
 {
-    public class ConfigurationModel : IPersistable
+    public class PersistentState : IPersistable
     {
         public CompressionCondition Compression { get; set; } = new CompressionCondition();
         public SelectionCondition Selection { get; set; } = new SelectionCondition();

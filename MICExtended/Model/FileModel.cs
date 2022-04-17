@@ -8,7 +8,7 @@ using System.IO;
 
 namespace MICExtended.Model
 {
-    public class FileViewModel
+    public class FileModel
     {
         public string RootPath { get; set; } = string.Empty;
         public string FilePath { get; set; } = string.Empty;

@@ -21,7 +21,7 @@ namespace MICExtended.Common
 
             public static readonly ReadOnlyCollection<string> ALLOWED = new ReadOnlyCollection<string> (
                 new[] {
-                    ".jpg" , ".jpeg", ".png" , ".bmp" , ".rle" , ".dib" , ".gif" , ".tif" , ".tiff", ".wmf" ,
+                    JPG, JPEG, PNG , ".bmp" , ".rle" , ".dib" , ".gif" , ".tif" , ".tiff", ".wmf" ,
                     ".3fr" , ".ari" , ".arw" , ".bay" , ".crw" , ".cr2" , ".cap" , ".dcs" , ".dcr" , ".dng" ,
                     ".drf" , ".eip" , ".erf" , ".fff" , ".iiq" , ".k25" , ".kdc" , ".mdc" , ".mef" , ".mos" ,
                     ".mrw" , ".nef" , ".nrw" , ".obm" , ".orf" , ".pef" , ".ptx" , ".pxn" , ".r3d" , ".raf" ,
