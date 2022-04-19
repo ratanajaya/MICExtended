@@ -7,4 +7,4 @@ This  application is a fork of yogee's <a href="https://sourceforge.net/projects
 
 #Preview
 
-![](_Extras/Capture.PNG)
+![](_Extras/CaptureV1.2.PNG)
