@@ -150,8 +150,8 @@ namespace MICExtended.Service
 
         private IEnumerable<string> GetSuitableFilePaths(string path) {
             return Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories)
-                .Where(f => !f.Contains(Constant.Pathing.SCOMPRESSED)
-                            && Constant.Extension.ALLOWED.Any(a => a.Equals(Path.GetExtension(f), StringComparison.OrdinalIgnoreCase)));
+                .Where(f => //!f.Contains(Constant.Pathing.SCOMPRESSED) && 
+                Constant.Extension.ALLOWED.Any(a => a.Equals(Path.GetExtension(f), StringComparison.OrdinalIgnoreCase)));
 
             #region LEGACY with sorting
             //string[] subDirs = _io.GetDirectories(path);

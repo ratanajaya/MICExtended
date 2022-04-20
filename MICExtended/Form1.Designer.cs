@@ -132,11 +132,11 @@
             // chkReplaceOriginalFile
             // 
             this.chkReplaceOriginalFile.AutoSize = true;
-            this.chkReplaceOriginalFile.Location = new System.Drawing.Point(261, 0);
+            this.chkReplaceOriginalFile.Location = new System.Drawing.Point(256, 0);
             this.chkReplaceOriginalFile.Name = "chkReplaceOriginalFile";
-            this.chkReplaceOriginalFile.Size = new System.Drawing.Size(133, 19);
+            this.chkReplaceOriginalFile.Size = new System.Drawing.Size(138, 19);
             this.chkReplaceOriginalFile.TabIndex = 16;
-            this.chkReplaceOriginalFile.Text = "Replace Original File";
+            this.chkReplaceOriginalFile.Text = "Replace Original Files";
             this.chkReplaceOriginalFile.UseVisualStyleBackColor = true;
             this.chkReplaceOriginalFile.CheckedChanged += new System.EventHandler(this.chkReplaceOriginalFile_CheckedChanged);
             // 

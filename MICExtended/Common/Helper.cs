@@ -8,6 +8,7 @@ using System.Reflection;
 
 namespace MICExtended.Common
 {
+    //TODO merge into ImageCompressor.cs
     public static class Helper
     {
         private static List<string> extensionsAllowd = Constant.Extension.ALLOWED.ToList();
