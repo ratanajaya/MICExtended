@@ -149,13 +149,14 @@ namespace MICExtended.Service
         }
 
         private IEnumerable<string> GetSuitableFilePaths(string path) {
-            string[] subDirs = _io.GetDirectories(path);
-            var filePathsFromSubdir = subDirs.SelectMany(s => GetSuitableFilePaths(s));
-
-            var filePaths = Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories)
-                .Where(f => Constant.Extension.ALLOWED.Any(a => a.Equals(Path.GetExtension(f), StringComparison.OrdinalIgnoreCase)));
+            return Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories)
+                .Where(f => !f.Contains(Constant.Pathing.SCOMPRESSED)
+                            && Constant.Extension.ALLOWED.Any(a => a.Equals(Path.GetExtension(f), StringComparison.OrdinalIgnoreCase)));
 
             #region LEGACY with sorting
+            //string[] subDirs = _io.GetDirectories(path);
+            //var filePathsFromSubdir = subDirs.SelectMany(s => GetSuitableFilePaths(s));
+
             //var filePaths = Constant.Extension.ALLOWED.AsParallel()
             //    .SelectMany(a => Directory.EnumerateFiles(path, a, SearchOption.TopDirectoryOnly)).AsEnumerable();
 
@@ -165,9 +166,9 @@ namespace MICExtended.Service
             //var sortedFileNames = fileNames.OrderByAlphaNumeric(f => f);
             //var sortedFilePaths = fileNames.Select(f => Path.Combine(path, f));
             //var combinedFilePaths = filePathsFromSubdir.Concat(sortedFilePaths).ToList();
-            #endregion
 
-            return filePaths;
+            //return filePaths;
+            #endregion
         }
 
         private FileModel GetFileViewModel(string path, string rootPath) {
@@ -186,6 +187,19 @@ namespace MICExtended.Service
         }
 
         public void CompressFiles(List<FileModel> srcFiles, List<FileModel> dstFiles, CompressionCondition compressionCondition, IProgress<ProgressReport> progress) {
+            if(!srcFiles.Any()) {
+                progress.Report(new ProgressReport {
+                    CurrentTask = $"Operation invalid",
+                    Step = 0,
+                    TaskCount = 1,
+                    TaskEnd = true,
+                    ShowPopup = true,
+                    TaskEndMessage = $"There is no file to compress"
+                });
+
+                return;
+            }
+
             if(srcFiles.Count != dstFiles.Count) { throw new InvalidDataException("srcFiles and dstFiles have different length"); }
 
             var dirNames = dstFiles.Select(a => Path.GetDirectoryName(a.FilePath)).Distinct().ToList();
@@ -226,7 +240,7 @@ namespace MICExtended.Service
                 TaskCount = taskCount,
                 TaskEnd = true,
                 ShowPopup = true,
-                TaskEndMessage = $"{taskCount} images has been compressed"
+                TaskEndMessage = $"{srcFiles.Count} images has been compressed"
             });
         }
 

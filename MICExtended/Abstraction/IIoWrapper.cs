@@ -12,6 +12,7 @@ namespace MICExtended.Abstraction
     public interface IIoWapper
     {
         IEnumerable<string> GetAllFiles(string path);
+        IEnumerable<string> EnumerateFiles(string path, string searchPattern, SearchOption searchOption);
         void CreateDirectory(string path);
         string[] GetDirectories(string path);
         bool FileExist(string path);
