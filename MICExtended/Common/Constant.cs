@@ -12,6 +12,7 @@ namespace MICExtended.Common
         public static class Pathing
         {
             public const string COMPRESSED = "_compressed";
+            public const string SCOMPRESSED = "\\_compressed";
         }
         public static class Extension
         {

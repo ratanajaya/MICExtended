@@ -25,10 +25,11 @@
         ///  the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.grpSrcPath = new System.Windows.Forms.GroupBox();
             this.btnOpenSrc = new System.Windows.Forms.Button();
             this.txtScrDir = new System.Windows.Forms.TextBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.grpDstPath = new System.Windows.Forms.GroupBox();
+            this.chkReplaceOriginalFile = new System.Windows.Forms.CheckBox();
             this.btnOpenDst = new System.Windows.Forms.Button();
             this.txtDstDir = new System.Windows.Forms.TextBox();
             this.listViewSrc = new System.Windows.Forms.ListView();
@@ -37,14 +38,14 @@
             this.srcColDimension = new System.Windows.Forms.ColumnHeader();
             this.srcColBytesPerPixel = new System.Windows.Forms.ColumnHeader();
             this.btnCompress = new System.Windows.Forms.Button();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.grpSelection = new System.Windows.Forms.GroupBox();
             this.numMinB100 = new System.Windows.Forms.NumericUpDown();
             this.numMinSize = new System.Windows.Forms.NumericUpDown();
             this.chkMinB100 = new System.Windows.Forms.CheckBox();
             this.chkMinSize = new System.Windows.Forms.CheckBox();
             this.clFileType = new System.Windows.Forms.CheckedListBox();
             this.chkFileTypeAll = new System.Windows.Forms.CheckBox();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.grpCompression = new System.Windows.Forms.GroupBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.rbCtOriginal = new System.Windows.Forms.RadioButton();
             this.rbCtPng = new System.Windows.Forms.RadioButton();
@@ -70,12 +71,12 @@
             this.dstColSize = new System.Windows.Forms.ColumnHeader();
             this.dstColDimension = new System.Windows.Forms.ColumnHeader();
             this.dstColBytesPerPixel = new System.Windows.Forms.ColumnHeader();
-            this.groupBox1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            this.groupBox3.SuspendLayout();
+            this.grpSrcPath.SuspendLayout();
+            this.grpDstPath.SuspendLayout();
+            this.grpSelection.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMinB100)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numMinSize)).BeginInit();
-            this.groupBox4.SuspendLayout();
+            this.grpCompression.SuspendLayout();
             this.groupBox6.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trkNewDimensionPct)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numNewDimensionPct)).BeginInit();
@@ -88,16 +89,16 @@
             this.tabPage2.SuspendLayout();
             this.SuspendLayout();
             // 
-            // groupBox1
+            // grpSrcPath
             // 
-            this.groupBox1.Controls.Add(this.btnOpenSrc);
-            this.groupBox1.Controls.Add(this.txtScrDir);
-            this.groupBox1.Location = new System.Drawing.Point(10, 10);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(400, 53);
-            this.groupBox1.TabIndex = 0;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Open Directory Containing Images to Compress";
+            this.grpSrcPath.Controls.Add(this.btnOpenSrc);
+            this.grpSrcPath.Controls.Add(this.txtScrDir);
+            this.grpSrcPath.Location = new System.Drawing.Point(10, 10);
+            this.grpSrcPath.Name = "grpSrcPath";
+            this.grpSrcPath.Size = new System.Drawing.Size(400, 53);
+            this.grpSrcPath.TabIndex = 0;
+            this.grpSrcPath.TabStop = false;
+            this.grpSrcPath.Text = "Open Directory Containing Images to Compress";
             // 
             // btnOpenSrc
             // 
@@ -116,16 +117,28 @@
             this.txtScrDir.Size = new System.Drawing.Size(350, 23);
             this.txtScrDir.TabIndex = 0;
             // 
-            // groupBox2
+            // grpDstPath
             // 
-            this.groupBox2.Controls.Add(this.btnOpenDst);
-            this.groupBox2.Controls.Add(this.txtDstDir);
-            this.groupBox2.Location = new System.Drawing.Point(420, 10);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(400, 53);
-            this.groupBox2.TabIndex = 2;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Save Compressed Image To";
+            this.grpDstPath.Controls.Add(this.chkReplaceOriginalFile);
+            this.grpDstPath.Controls.Add(this.btnOpenDst);
+            this.grpDstPath.Controls.Add(this.txtDstDir);
+            this.grpDstPath.Location = new System.Drawing.Point(420, 10);
+            this.grpDstPath.Name = "grpDstPath";
+            this.grpDstPath.Size = new System.Drawing.Size(400, 53);
+            this.grpDstPath.TabIndex = 2;
+            this.grpDstPath.TabStop = false;
+            this.grpDstPath.Text = "Save Compressed Image To";
+            // 
+            // chkReplaceOriginalFile
+            // 
+            this.chkReplaceOriginalFile.AutoSize = true;
+            this.chkReplaceOriginalFile.Location = new System.Drawing.Point(261, 0);
+            this.chkReplaceOriginalFile.Name = "chkReplaceOriginalFile";
+            this.chkReplaceOriginalFile.Size = new System.Drawing.Size(133, 19);
+            this.chkReplaceOriginalFile.TabIndex = 16;
+            this.chkReplaceOriginalFile.Text = "Replace Original File";
+            this.chkReplaceOriginalFile.UseVisualStyleBackColor = true;
+            this.chkReplaceOriginalFile.CheckedChanged += new System.EventHandler(this.chkReplaceOriginalFile_CheckedChanged);
             // 
             // btnOpenDst
             // 
@@ -191,20 +204,20 @@
             this.btnCompress.UseVisualStyleBackColor = true;
             this.btnCompress.Click += new System.EventHandler(this.btnCompress_Click);
             // 
-            // groupBox3
+            // grpSelection
             // 
-            this.groupBox3.Controls.Add(this.numMinB100);
-            this.groupBox3.Controls.Add(this.numMinSize);
-            this.groupBox3.Controls.Add(this.chkMinB100);
-            this.groupBox3.Controls.Add(this.chkMinSize);
-            this.groupBox3.Controls.Add(this.clFileType);
-            this.groupBox3.Controls.Add(this.chkFileTypeAll);
-            this.groupBox3.Location = new System.Drawing.Point(10, 69);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(400, 144);
-            this.groupBox3.TabIndex = 2;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "File Selection";
+            this.grpSelection.Controls.Add(this.numMinB100);
+            this.grpSelection.Controls.Add(this.numMinSize);
+            this.grpSelection.Controls.Add(this.chkMinB100);
+            this.grpSelection.Controls.Add(this.chkMinSize);
+            this.grpSelection.Controls.Add(this.clFileType);
+            this.grpSelection.Controls.Add(this.chkFileTypeAll);
+            this.grpSelection.Location = new System.Drawing.Point(10, 69);
+            this.grpSelection.Name = "grpSelection";
+            this.grpSelection.Size = new System.Drawing.Size(400, 144);
+            this.grpSelection.TabIndex = 2;
+            this.grpSelection.TabStop = false;
+            this.grpSelection.Text = "File Selection";
             // 
             // numMinB100
             // 
@@ -274,24 +287,24 @@
             this.chkFileTypeAll.UseVisualStyleBackColor = true;
             this.chkFileTypeAll.Click += new System.EventHandler(this.chkFileTypeAll_Click);
             // 
-            // groupBox4
+            // grpCompression
             // 
-            this.groupBox4.Controls.Add(this.groupBox6);
-            this.groupBox4.Controls.Add(this.label3);
-            this.groupBox4.Controls.Add(this.trkNewDimensionPct);
-            this.groupBox4.Controls.Add(this.numNewDimensionPct);
-            this.groupBox4.Controls.Add(this.numFixedWidth);
-            this.groupBox4.Controls.Add(this.groupBox5);
-            this.groupBox4.Controls.Add(this.label2);
-            this.groupBox4.Controls.Add(this.numQuality);
-            this.groupBox4.Controls.Add(this.label1);
-            this.groupBox4.Controls.Add(this.trkQuality);
-            this.groupBox4.Location = new System.Drawing.Point(420, 69);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(400, 144);
-            this.groupBox4.TabIndex = 3;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Compression Parameter";
+            this.grpCompression.Controls.Add(this.groupBox6);
+            this.grpCompression.Controls.Add(this.label3);
+            this.grpCompression.Controls.Add(this.trkNewDimensionPct);
+            this.grpCompression.Controls.Add(this.numNewDimensionPct);
+            this.grpCompression.Controls.Add(this.numFixedWidth);
+            this.grpCompression.Controls.Add(this.groupBox5);
+            this.grpCompression.Controls.Add(this.label2);
+            this.grpCompression.Controls.Add(this.numQuality);
+            this.grpCompression.Controls.Add(this.label1);
+            this.grpCompression.Controls.Add(this.trkQuality);
+            this.grpCompression.Location = new System.Drawing.Point(420, 69);
+            this.grpCompression.Name = "grpCompression";
+            this.grpCompression.Size = new System.Drawing.Size(400, 144);
+            this.grpCompression.TabIndex = 3;
+            this.grpCompression.TabStop = false;
+            this.grpCompression.Text = "Compression Parameter";
             // 
             // groupBox6
             // 
@@ -543,24 +556,24 @@
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.barProgress);
             this.Controls.Add(this.lblProgress);
-            this.Controls.Add(this.groupBox4);
-            this.Controls.Add(this.groupBox3);
+            this.Controls.Add(this.grpCompression);
+            this.Controls.Add(this.grpSelection);
             this.Controls.Add(this.btnCompress);
-            this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.grpDstPath);
+            this.Controls.Add(this.grpSrcPath);
             this.Name = "Form1";
             this.Text = "Mass Image Compressor Extended";
             this.Load += new System.EventHandler(this.Form1_Load);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
+            this.grpSrcPath.ResumeLayout(false);
+            this.grpSrcPath.PerformLayout();
+            this.grpDstPath.ResumeLayout(false);
+            this.grpDstPath.PerformLayout();
+            this.grpSelection.ResumeLayout(false);
+            this.grpSelection.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMinB100)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numMinSize)).EndInit();
-            this.groupBox4.ResumeLayout(false);
-            this.groupBox4.PerformLayout();
+            this.grpCompression.ResumeLayout(false);
+            this.grpCompression.PerformLayout();
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trkNewDimensionPct)).EndInit();
@@ -580,18 +593,18 @@
 
         #endregion
 
-        private GroupBox groupBox1;
+        private GroupBox grpSrcPath;
         private Button btnOpenSrc;
         private TextBox txtScrDir;
-        private GroupBox groupBox2;
+        private GroupBox grpDstPath;
         private Button btnOpenDst;
         private TextBox txtDstDir;
         private ListView listViewSrc;
         private ColumnHeader srcColFile;
         private ColumnHeader srcColSize;
         private Button btnCompress;
-        private GroupBox groupBox3;
-        private GroupBox groupBox4;
+        private GroupBox grpSelection;
+        private GroupBox grpCompression;
         private Label label1;
         private TrackBar trkQuality;
         private NumericUpDown numQuality;
@@ -625,5 +638,6 @@
         private CheckBox chkMinSize;
         private NumericUpDown numMinB100;
         private NumericUpDown numMinSize;
+        private CheckBox chkReplaceOriginalFile;
     }
 }

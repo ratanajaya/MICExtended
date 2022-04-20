@@ -48,10 +48,12 @@ namespace MICExtended
         #endregion
 
         #region UI Updater
-        private void UpdateDirectoryTxt() {
+        private void UpdateDirectoryDisplays() {
             txtScrDir.Text = _viewModel.SrcDir;
             txtDstDir.Text = _viewModel.DstDir;
-            btnOpenDst.Enabled = !string.IsNullOrEmpty(_viewModel.SrcDir);
+
+            btnOpenDst.Enabled = !_viewModel.Compression.ReplaceOriginal && !string.IsNullOrEmpty(_viewModel.SrcDir);
+            txtDstDir.Enabled = !_viewModel.Compression.ReplaceOriginal;
         }
 
         private void UpdateSrcList() {
@@ -146,17 +148,40 @@ namespace MICExtended
         }
         #endregion
 
+        #region UI Blocker
+        private void Block() { SetControlInteractability(false); }
+        private void Unblock() { SetControlInteractability(true); }
+
+        //private void WithBlocker(Action body) {
+        //    SetControlInteractability(false);
+        //    body();
+
+        //}
+
+        private void SetControlInteractability(bool enabled) {
+            grpSrcPath.Enabled = enabled;
+            grpDstPath.Enabled = enabled;
+            grpCompression.Enabled = enabled;
+            grpSelection.Enabled = enabled;
+            btnCompress.Enabled = enabled;
+        }
+        #endregion
+
         #region Event Handlers
         private async void btnOpenSrc_Click(object sender, EventArgs e) {
             _viewModel.SrcDir = OpenDirectorySelector();
             if(string.IsNullOrEmpty(_viewModel.SrcDir)) return;
 
-            _viewModel.DstDir = Path.Combine(_viewModel.SrcDir, Constant.Pathing.COMPRESSED);
+            Block();
+
+            _viewModel.DstDir = _viewModel.DefaultDstDir; Path.Combine(_viewModel.SrcDir, Constant.Pathing.COMPRESSED);
 
             _al.ClearCache();
 
-            UpdateDirectoryTxt();
+            UpdateDirectoryDisplays();
             await ReloadFiles();
+
+            Unblock();
         }
 
         private void btnOpenDst_Click(object sender, EventArgs e) {
@@ -164,15 +189,28 @@ namespace MICExtended
             if(string.IsNullOrEmpty(_viewModel.DstDir)) return;
 
             _viewModel.DstFiles = _al.GetCompressedFilePreview(_viewModel.SrcDir, _viewModel.DstDir, _viewModel.SrcFiles, _viewModel.Compression);
-            UpdateDirectoryTxt();
+            UpdateDirectoryDisplays();
+            ReloadDstFiles();
+        }
+
+        private void chkReplaceOriginalFile_CheckedChanged(object sender, EventArgs e) {
+            _viewModel.Compression.ReplaceOriginal = chkReplaceOriginalFile.Checked;
+            if(_viewModel.Compression.ReplaceOriginal)
+                _viewModel.DstDir = _viewModel.SrcDir;
+
+            UpdateDirectoryDisplays();
             ReloadDstFiles();
         }
 
         private async void btnCompress_Click(object sender, EventArgs e) {
+            Block();
+
             await Task.Run(() => _al.CompressFiles(_viewModel.SrcFiles, _viewModel.DstFiles, _viewModel.Compression, _progress));
 
             _viewModel.DstFiles = _al.LoadFileDetail(_viewModel.DstFiles).ToList();
             UpdateDstList();
+
+            Unblock();
         }
 
         private void trkQuality_Scroll(object sender, EventArgs e) {

@@ -9,6 +9,8 @@ namespace MICExtended.Model
 {
     public class CompressionCondition
     {
+        public bool ReplaceOriginal { get; set; }
+
         public int Quality { get; set; } = 90;
         public Dimension Dimension { get; set; } = Dimension.NewDimensionInPct;
         public int DimensionFixedWidth { get; set; } = 1920;

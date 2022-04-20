@@ -11,7 +11,11 @@ namespace MICExtended.Service
     public class IoWrapper : IIoWapper
     {
         public IEnumerable<string> GetAllFiles(string path) {
-            return Directory.EnumerateFiles(path, "*.*", SearchOption.AllDirectories);
+            return Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories);
+        }
+
+        public IEnumerable<string> EnumerateFiles(string path, string searchPattern, SearchOption searchOption) {
+            return Directory.EnumerateFiles(path, searchPattern, searchOption);
         }
 
         public string[] GetDirectories(string path) {
