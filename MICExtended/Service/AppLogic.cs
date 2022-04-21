@@ -272,7 +272,7 @@ namespace MICExtended.Service
                 TaskCount = taskCount,
                 TaskEnd = true,
                 ShowPopup = true,
-                TaskEndMessage = $"{srcFiles.Count} images has been compressed for {sw.Elapsed.ToReadableString()}"
+                TaskEndMessage = $"{srcFiles.Count} images has been compressed in {sw.Elapsed.ToReadableString()}"
             });
         }
 
