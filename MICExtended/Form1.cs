@@ -38,6 +38,7 @@ namespace MICExtended
             clFileType.Items.AddRange(Constant.Extension.ALLOWED.ToArray());
             clFileType.CheckOnClick = true;
 
+            UpdateDirectoryDisplays();
             UpdateClFileType();
             UpdateFileSelectionMinParameter();
             UpdateFileSelectionMinParameterValue();
@@ -51,33 +52,32 @@ namespace MICExtended
         private void UpdateDirectoryDisplays() {
             txtScrDir.Text = _viewModel.SrcDir;
             txtDstDir.Text = _viewModel.DstDir;
+            chkReplaceOriginalFile.Checked = _viewModel.Compression.ReplaceOriginal;
 
             btnOpenDst.Enabled = !_viewModel.Compression.ReplaceOriginal && !string.IsNullOrEmpty(_viewModel.SrcDir);
             txtDstDir.Enabled = !_viewModel.Compression.ReplaceOriginal;
         }
 
-        private void UpdateSrcList() {
-            var srcViewItems = _viewModel.SrcFiles.Select(a => {
-                var lv = new ListViewItem(a.FilePath.Replace(_viewModel.SrcDir, String.Empty));
+        private ListViewItem[] GetListViewItems(List<FileModel> files, string rootPath) {
+            string rootPathWithSlash = $"{rootPath}{Path.DirectorySeparatorChar}";
+
+            return files.Select(a => {
+                var lv = new ListViewItem(a.FilePath.Replace(rootPathWithSlash, String.Empty));
                 lv.SubItems.Add(a.SizeDisplay);
                 lv.SubItems.Add(a.DimensionDisplay);
                 lv.SubItems.Add(a.BytesPer100PixelDisplay);
                 return lv;
             }).ToArray();
+        }
+
+        private void UpdateSrcList() {
             listViewSrc.Items.Clear();
-            listViewSrc.Items.AddRange(srcViewItems);
+            listViewSrc.Items.AddRange(GetListViewItems(_viewModel.SrcFiles, _viewModel.SrcDir));
         }
 
         private void UpdateDstList() {
-            var dstViewItems = _viewModel.DstFiles.Select(a => {
-                var lv = new ListViewItem(a.FilePath.Replace(_viewModel.DstDir, String.Empty));
-                lv.SubItems.Add(a.SizeDisplay);
-                lv.SubItems.Add(a.DimensionDisplay);
-                lv.SubItems.Add(a.BytesPer100PixelDisplay);
-                return lv;
-            }).ToArray();
             listViewDst.Items.Clear();
-            listViewDst.Items.AddRange(dstViewItems);
+            listViewDst.Items.AddRange(GetListViewItems(_viewModel.DstFiles, _viewModel.DstDir));
         }
 
         private void UpdateCompressionParameter() {
@@ -152,12 +152,6 @@ namespace MICExtended
         private void Block() { SetControlInteractability(false); }
         private void Unblock() { SetControlInteractability(true); }
 
-        //private void WithBlocker(Action body) {
-        //    SetControlInteractability(false);
-        //    body();
-
-        //}
-
         private void SetControlInteractability(bool enabled) {
             grpSrcPath.Enabled = enabled;
             grpDstPath.Enabled = enabled;
@@ -174,7 +168,7 @@ namespace MICExtended
 
             Block();
 
-            _viewModel.DstDir = _viewModel.DefaultDstDir; Path.Combine(_viewModel.SrcDir, Constant.Pathing.COMPRESSED);
+            _viewModel.DstDir = GetDefaultDstPath(_viewModel.SrcDir, _viewModel.Compression.ReplaceOriginal);
 
             _al.ClearCache();
 
@@ -188,15 +182,14 @@ namespace MICExtended
             _viewModel.DstDir = OpenDirectorySelector();
             if(string.IsNullOrEmpty(_viewModel.DstDir)) return;
 
-            _viewModel.DstFiles = _al.GetCompressedFilePreview(_viewModel.SrcDir, _viewModel.DstDir, _viewModel.SrcFiles, _viewModel.Compression);
+            _viewModel.DstFiles = _al.GetCompressedFilePreview(_viewModel.DstDir, _viewModel.SrcFiles, _viewModel.Compression);
             UpdateDirectoryDisplays();
             ReloadDstFiles();
         }
 
         private void chkReplaceOriginalFile_CheckedChanged(object sender, EventArgs e) {
             _viewModel.Compression.ReplaceOriginal = chkReplaceOriginalFile.Checked;
-            if(_viewModel.Compression.ReplaceOriginal)
-                _viewModel.DstDir = _viewModel.SrcDir;
+            _viewModel.DstDir = GetDefaultDstPath(_viewModel.SrcDir, _viewModel.Compression.ReplaceOriginal);
 
             UpdateDirectoryDisplays();
             ReloadDstFiles();
@@ -325,8 +318,14 @@ namespace MICExtended
         private void ReloadDstFiles() {
             if(string.IsNullOrEmpty(_viewModel.DstDir)) return;
 
-            _viewModel.DstFiles = _al.GetCompressedFilePreview(_viewModel.SrcDir, _viewModel.DstDir, _viewModel.SrcFiles, _viewModel.Compression);
+            _viewModel.DstFiles = _al.GetCompressedFilePreview(_viewModel.DstDir, _viewModel.SrcFiles, _viewModel.Compression);
             UpdateDstList();
+        }
+
+        private string GetDefaultDstPath(string srcDir, bool replaceOriginal) {
+            if(string.IsNullOrEmpty(srcDir)) return string.Empty;
+            if(replaceOriginal) return srcDir;
+            return Path.Combine(srcDir, Constant.Pathing.COMPRESSED);
         }
         #endregion
 

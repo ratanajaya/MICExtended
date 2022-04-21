@@ -4,6 +4,7 @@ using MICExtended.Model;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -73,7 +74,7 @@ namespace MICExtended.Service
         }
         #endregion
 
-        public List<FileModel> GetCompressedFilePreview(string srcPath, string dstPath, List<FileModel> sourceFiles, CompressionCondition selectionCondition) {
+        public List<FileModel> GetCompressedFilePreview(string dstPath, List<FileModel> sourceFiles, CompressionCondition selectionCondition) {
             var result = sourceFiles.AsParallel().Select(a => new FileModel {
                 FilePath = Path.Combine(dstPath,
                     selectionCondition.ConvertTo == SupportedMimeType.JPEG ? Path.ChangeExtension(a.RelativePath, Constant.Extension.JPG) :
@@ -88,8 +89,11 @@ namespace MICExtended.Service
         public async Task<List<FileModel>> GetFileViewModels(string path, SelectionCondition selection, IProgress<ProgressReport> progress) {
             int taskCount = 2;
 
-            var allData = await Task.Run(() => {
-                if(_fileCache.ContainsKey(path)) return _fileCache[path];
+            var sw = new Stopwatch();
+            sw.Start();
+
+            (List<FileModel> allData, bool isReload) = await Task.Run(() => {
+                if(_fileCache.ContainsKey(path)) return (_fileCache[path], false);
 
                 progress.Report(new ProgressReport {
                     CurrentTask = $"Looking up image files...",
@@ -111,24 +115,34 @@ namespace MICExtended.Service
                 int parallelStep = 1;
                 long lastTick = DateTime.Now.Ticks;
 
+                var pathWithSlash = path + Path.DirectorySeparatorChar;
                 Parallel.For(0, filePaths.Count, new ParallelOptions { MaxDegreeOfParallelism = 8 }, (i, state) => {
-                    result[i] = GetFileViewModel(filePaths[i], path);
+                    var filePath = filePaths[i];
+                    try {
+                        result[i] = GetFileViewModel(filePath, path);
+                    }
+                    catch(Exception ex) {
+                        #pragma warning disable CS8625
+                        result[i] = null;
+                        #pragma warning restore CS8625
+                        _log.Error($"GetFileViewModels | Parallel.For | {filePath} | {ex.Message}");
+                    }
 
                     var currentStep = Interlocked.Increment(ref parallelStep);
                     long currentTick = DateTime.Now.Ticks;
                     if(currentTick - lastTick > 2000000) { //Updating too fast will cause winForm label to fail
                         Interlocked.Exchange(ref lastTick, currentTick);
                         progress.Report(new ProgressReport {
-                            CurrentTask = $"Loading {filePaths[i]}...",
+                            CurrentTask = $"Loading {filePath.Replace(pathWithSlash, string.Empty)}...",
                             Step = currentStep,
                             TaskCount = taskCount,
                         });
                     }
                 });
 
-                _fileCache.Add(path, result.ToList());
+                _fileCache.Add(path, result.Where(a => a != null).ToList());
 
-                return _fileCache[path];
+                return (_fileCache[path], true);
             });
 
             var selectedData = allData.Where(a => 
@@ -137,9 +151,13 @@ namespace MICExtended.Service
                 (!selection.UseMinSize || a.Size >= selection.MinSize * 1024)
             ).ToList();
 
+            var elapsed = sw.Elapsed;
+            var reloadMessage = isReload ? $"Loaded {allData.Count} images in {elapsed.ToReadableString()}. ": "";
+            var taskMessage = $"{reloadMessage}Filtered {selectedData.Count} of {allData.Count} images";
+
             progress.Report(new ProgressReport {
-                CurrentTask = $"Loading finished. {selectedData.Count()} images found",
-                TaskEndMessage = $"Loading finished. {selectedData.Count()} images found",
+                CurrentTask = taskMessage,
+                TaskEndMessage = taskMessage,
                 TaskEnd = true,
                 Step = taskCount,
                 TaskCount = taskCount,
@@ -149,9 +167,20 @@ namespace MICExtended.Service
         }
 
         private IEnumerable<string> GetSuitableFilePaths(string path) {
-            return Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories)
-                .Where(f => //!f.Contains(Constant.Pathing.SCOMPRESSED) && 
-                Constant.Extension.ALLOWED.Any(a => a.Equals(Path.GetExtension(f), StringComparison.OrdinalIgnoreCase)));
+            var subDirs = _io.GetDirectories(path).Where(a => !a.EndsWith(Constant.Pathing.SCOMPRESSED));
+            var filePathsFromSubdir = subDirs.SelectMany(s => GetSuitableFilePaths(s));
+            var filePathsFromRoot = Directory.EnumerateFiles(path, "*", SearchOption.TopDirectoryOnly);
+
+            var result = filePathsFromRoot.Concat(filePathsFromSubdir)
+                         .Where(f => Constant.Extension.ALLOWED.Any(a => a.Equals(Path.GetExtension(f), StringComparison.OrdinalIgnoreCase)));
+
+            return result;
+
+            #region LEGACY without dir exclusion
+            //return Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories)
+            //    .Where(f => //!f.Contains(Constant.Pathing.SCOMPRESSED) && 
+            //    Constant.Extension.ALLOWED.Any(a => a.Equals(Path.GetExtension(f), StringComparison.OrdinalIgnoreCase)));
+            #endregion
 
             #region LEGACY with sorting
             //string[] subDirs = _io.GetDirectories(path);
@@ -200,6 +229,9 @@ namespace MICExtended.Service
                 return;
             }
 
+            var sw = new Stopwatch();
+            sw.Start();
+
             if(srcFiles.Count != dstFiles.Count) { throw new InvalidDataException("srcFiles and dstFiles have different length"); }
 
             var dirNames = dstFiles.Select(a => Path.GetDirectoryName(a.FilePath)).Distinct().ToList();
@@ -228,7 +260,7 @@ namespace MICExtended.Service
                 }
 
                 lock(parallelReport) {
-                    parallelReport.CurrentTask = $"Compressed {src.Name}...";
+                    parallelReport.CurrentTask = $"Compressed {src.RelativePath}...";
                     parallelReport.Step++;
                     progress.Report(parallelReport);
                 }
@@ -240,7 +272,7 @@ namespace MICExtended.Service
                 TaskCount = taskCount,
                 TaskEnd = true,
                 ShowPopup = true,
-                TaskEndMessage = $"{srcFiles.Count} images has been compressed"
+                TaskEndMessage = $"{srcFiles.Count} images has been compressed for {sw.Elapsed.ToReadableString()}"
             });
         }
 
