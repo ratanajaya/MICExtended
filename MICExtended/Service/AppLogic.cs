@@ -74,6 +74,7 @@ namespace MICExtended.Service
         }
         #endregion
 
+        #region Read File
         public List<FileModel> GetCompressedFilePreview(string dstPath, List<FileModel> sourceFiles, CompressionCondition selectionCondition) {
             var result = sourceFiles.AsParallel().Select(a => new FileModel {
                 FilePath = Path.Combine(dstPath,
@@ -145,14 +146,14 @@ namespace MICExtended.Service
                 return (_fileCache[path], true);
             });
 
-            var selectedData = allData.Where(a => 
+            var selectedData = allData.Where(a =>
                 selection.FileTypes.Any(b => b.Equals(a.Extension, StringComparison.OrdinalIgnoreCase)) &&
                 (!selection.UseMinB100 || a.BytesPer100Pixel >= selection.MinB100) &&
                 (!selection.UseMinSize || a.Size >= selection.MinSize * 1024)
             ).ToList();
 
             var elapsed = sw.Elapsed;
-            var reloadMessage = isReload ? $"Loaded {allData.Count} images in {elapsed.ToReadableString()}. ": "";
+            var reloadMessage = isReload ? $"Loaded {allData.Count} images in {elapsed.ToReadableString()}. " : "";
             var taskMessage = $"{reloadMessage}Filtered {selectedData.Count} of {allData.Count} images";
 
             progress.Report(new ProgressReport {
@@ -215,6 +216,12 @@ namespace MICExtended.Service
             }
         }
 
+        public IEnumerable<FileModel> LoadFileDetail(List<FileModel> files) {
+            return files.Select(a => GetFileViewModel(a.FilePath, a.RootPath));
+        }
+        #endregion
+
+        #region Modify File
         public void CompressFiles(List<FileModel> srcFiles, List<FileModel> dstFiles, CompressionCondition compressionCondition, IProgress<ProgressReport> progress) {
             if(!srcFiles.Any()) {
                 progress.Report(new ProgressReport {
@@ -275,10 +282,7 @@ namespace MICExtended.Service
                 TaskEndMessage = $"{srcFiles.Count} images has been compressed in {sw.Elapsed.ToReadableString()}"
             });
         }
-
-        public IEnumerable<FileModel> LoadFileDetail(List<FileModel> files) {
-            return files.Select(a => GetFileViewModel(a.FilePath, a.RootPath));
-        }
+        #endregion
 
         public void ClearCache() {
             _fileCache.Clear();
