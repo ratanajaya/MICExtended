@@ -8,6 +8,254 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="_TestImages\Anime\Attack On Titan\attack_on_titans_anime_wallpaper__1920x1200__by_abdu1995-d61olzx.jpg" />
+    <None Remove="_TestImages\Anime\Attack On Titan\cape clouds kei-suwabe rivaille shingeki_no_kyojin sky sword weapon hd wallpaper attack on titan shingekin no kyojin [animefullfights.com].jpg" />
+    <None Remove="_TestImages\Anime\Attack On Titan\lMBbJOk.png" />
+    <None Remove="_TestImages\Anime\Attack On Titan\mYjDzc2.png" />
+    <None Remove="_TestImages\Anime\Attack On Titan\Shingeki.no.Kyojin.full.1587723.jpg" />
+    <None Remove="_TestImages\Anime\Attack On Titan\Shingeki.no.Kyojin.full.1626877.jpg" />
+    <None Remove="_TestImages\Anime\Attack On Titan\VQ1zhkX.png" />
+    <None Remove="_TestImages\Anime\Yu-Gi-Oh!\4cb.jpg" />
+    <None Remove="_TestImages\Anime\Yu-Gi-Oh!\Cross-Over.full.511350.jpg" />
+    <None Remove="_TestImages\Anime\Yu-Gi-Oh!\Dark.Magician.full.457666.jpg" />
+    <None Remove="_TestImages\Anime\Yu-Gi-Oh!\Ishizu.Ishtar.full.144527.jpg" />
+    <None Remove="_TestImages\Anime\Yu-Gi-Oh!\Kaiba.Seto.full.564093.jpg" />
+    <None Remove="_TestImages\Anime\Yu-Gi-Oh!\Kaiba.Seto.full.637121.jpg" />
+    <None Remove="_TestImages\Anime\Yu-Gi-Oh!\Pharaoh.Atem.full.531875.jpg" />
+    <None Remove="_TestImages\Anime\Yu-Gi-Oh!\Yami.Yugi.full.1310848.jpg" />
+    <None Remove="_TestImages\Anime\Yu-Gi-Oh!\Yu-Gi-Oh!.Duel.Monsters.full.986153.jpg" />
+    <None Remove="_TestImages\Anime\Yu-Gi-Oh!\Yu-Gi-Oh!.full.587844.jpg" />
+    <None Remove="_TestImages\Anime\Yu-Gi-Oh!\Yu-Gi-Oh!.full.986197.jpg" />
+    <None Remove="_TestImages\Anime\Yu-Gi-Oh!\Yu-Gi-Oh!.full.986202.jpg" />
+    <None Remove="_TestImages\Game of Thrones\6y7DZpE.jpg" />
+    <None Remove="_TestImages\Game of Thrones\A.Song.of.Ice.and.Fire.full.1146478.jpg" />
+    <None Remove="_TestImages\Game of Thrones\A.Song.of.Ice.and.Fire.full.1246330.jpg" />
+    <None Remove="_TestImages\Game of Thrones\A.Song.of.Ice.and.Fire.full.1298854.jpg" />
+    <None Remove="_TestImages\Game of Thrones\balerion_the_black_dread_by_earthenblood-d7kacvo.png" />
+    <None Remove="_TestImages\Game of Thrones\eg9nK6G.jpg" />
+    <None Remove="_TestImages\Game of Thrones\FYyIzBY.jpg" />
+    <None Remove="_TestImages\Game of Thrones\giant_of_lannister_by_zippo514-d65cohp.jpg" />
+    <None Remove="_TestImages\Game of Thrones\ned_stark_and_robert_baratheon_by_hueco_mundo-d6i1xla.jpg" />
+    <None Remove="_TestImages\Game of Thrones\night_watcher_by_zippo514-d5cyjfw.jpg" />
+    <None Remove="_TestImages\Game\Ico &amp; SotC\13436141_p0.jpg" />
+    <None Remove="_TestImages\Game\Ico &amp; SotC\16365976_p0.jpg" />
+    <None Remove="_TestImages\Game\Ico &amp; SotC\22475748_p0_master1200.jpg" />
+    <None Remove="_TestImages\Game\Ico &amp; SotC\23243774_p0.jpg" />
+    <None Remove="_TestImages\Game\Ico &amp; SotC\7044206_p0.jpg" />
+    <None Remove="_TestImages\Game\Ico &amp; SotC\Colossus_7_by_CrescentDebris.jpg" />
+    <None Remove="_TestImages\Game\Ico &amp; SotC\Hg3LV.jpg" />
+    <None Remove="_TestImages\Game\Ico &amp; SotC\ico_by_kamifish-d5lclks.jpg" />
+    <None Remove="_TestImages\Game\Ico &amp; SotC\i__m_glad_you__re_okay_by_serain.jpg" />
+    <None Remove="_TestImages\Game\Ico &amp; SotC\Petit.Comet.full.565181.jpg" />
+    <None Remove="_TestImages\Game\Ico &amp; SotC\run_like_hell_by_zakuman.jpg" />
+    <None Remove="_TestImages\Game\Ico &amp; SotC\Shadow.of.the.Colossus.full.1358428.jpg" />
+    <None Remove="_TestImages\Game\Ico &amp; SotC\Shadow.of.the.Colossus.full.1471988.jpg" />
+    <None Remove="_TestImages\Game\Ico &amp; SotC\Shadow.of.the.Colossus.full.1628646.jpg" />
+    <None Remove="_TestImages\Game\Ico &amp; SotC\Shadow.of.the.Colossus.full.1628867.jpg" />
+    <None Remove="_TestImages\Game\Ico &amp; SotC\Shadow.of.the.Colossus.full.923749.jpg" />
+    <None Remove="_TestImages\Game\Ico &amp; SotC\Shadow_of_the_Colossus_by_meiwren.jpg" />
+    <None Remove="_TestImages\Game\Ico &amp; SotC\_yorda__by_immp.jpg" />
+    <None Remove="_TestImages\Game\Nier\2B\62062631_p0.jpg" />
+    <None Remove="_TestImages\Game\Nier\2B\62245388_p0.png" />
+    <None Remove="_TestImages\Game\Nier\2B\62366444_p0.jpg" />
+    <None Remove="_TestImages\Game\Nier\2B\62529877_p0_master1200.jpg" />
+    <None Remove="_TestImages\Game\Nier\2B\63589239_p0_master1200.jpg" />
+    <None Remove="_TestImages\Game\Nier\60827915_p0.jpg" />
+    <None Remove="_TestImages\Game\Nier\66225419_p0.jpg" />
+    <None Remove="_TestImages\Game\Nier\9S\60781742_p0.jpg" />
+    <None Remove="_TestImages\Game\Nier\9S\61722600_p0.png" />
+    <None Remove="_TestImages\Game\Nier\9S\61876017_p0.png" />
+    <None Remove="_TestImages\Game\Nier\9S\63069385_p1_master1200.jpg" />
+    <None Remove="_TestImages\Game\Nier\9S\9s_by_mircogravina-db9pqdu.jpg" />
+    <None Remove="_TestImages\Game\Nier\9S\9s_by_noeyebrow-db0bg5f.jpg" />
+    <None Remove="_TestImages\Game\Nier\9S\9s_by_pi_yu-db2mftl.jpg" />
+    <None Remove="_TestImages\Game\Nier\nier_automata__pascal_s_village_by_snow_the_wanderer-dcdc2tl.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="_TestImages\Anime\Attack On Titan\lMBbJOk.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Anime\Attack On Titan\mYjDzc2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Anime\Attack On Titan\Shingeki.no.Kyojin.full.1587723.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Anime\Attack On Titan\Shingeki.no.Kyojin.full.1626877.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Anime\Attack On Titan\VQ1zhkX.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Anime\Yu-Gi-Oh!\4cb.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Anime\Yu-Gi-Oh!\Cross-Over.full.511350.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Anime\Yu-Gi-Oh!\Dark.Magician.full.457666.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Anime\Yu-Gi-Oh!\Ishizu.Ishtar.full.144527.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Anime\Yu-Gi-Oh!\Kaiba.Seto.full.564093.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Anime\Yu-Gi-Oh!\Kaiba.Seto.full.637121.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Anime\Yu-Gi-Oh!\Pharaoh.Atem.full.531875.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Anime\Yu-Gi-Oh!\Yami.Yugi.full.1310848.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Anime\Yu-Gi-Oh!\Yu-Gi-Oh!.Duel.Monsters.full.986153.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Anime\Yu-Gi-Oh!\Yu-Gi-Oh!.full.587844.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Anime\Yu-Gi-Oh!\Yu-Gi-Oh!.full.986197.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Anime\Yu-Gi-Oh!\Yu-Gi-Oh!.full.986202.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game of Thrones\6y7DZpE.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game of Thrones\A.Song.of.Ice.and.Fire.full.1146478.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game of Thrones\A.Song.of.Ice.and.Fire.full.1246330.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game of Thrones\A.Song.of.Ice.and.Fire.full.1298854.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game of Thrones\balerion_the_black_dread_by_earthenblood-d7kacvo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game of Thrones\eg9nK6G.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game of Thrones\FYyIzBY.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game of Thrones\giant_of_lannister_by_zippo514-d65cohp.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game of Thrones\ned_stark_and_robert_baratheon_by_hueco_mundo-d6i1xla.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game of Thrones\night_watcher_by_zippo514-d5cyjfw.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Ico &amp; SotC\13436141_p0.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Ico &amp; SotC\16365976_p0.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Ico &amp; SotC\22475748_p0_master1200.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Ico &amp; SotC\23243774_p0.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Ico &amp; SotC\7044206_p0.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Ico &amp; SotC\Colossus_7_by_CrescentDebris.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Ico &amp; SotC\Hg3LV.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Ico &amp; SotC\ico_by_kamifish-d5lclks.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Ico &amp; SotC\i__m_glad_you__re_okay_by_serain.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Ico &amp; SotC\Petit.Comet.full.565181.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Ico &amp; SotC\run_like_hell_by_zakuman.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Ico &amp; SotC\Shadow.of.the.Colossus.full.1358428.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Ico &amp; SotC\Shadow.of.the.Colossus.full.1471988.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Ico &amp; SotC\Shadow.of.the.Colossus.full.1628646.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Ico &amp; SotC\Shadow.of.the.Colossus.full.1628867.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Ico &amp; SotC\Shadow.of.the.Colossus.full.923749.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Ico &amp; SotC\Shadow_of_the_Colossus_by_meiwren.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Ico &amp; SotC\_yorda__by_immp.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Nier\2B\62062631_p0.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Nier\2B\62245388_p0.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Nier\2B\62366444_p0.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Nier\2B\62529877_p0_master1200.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Nier\2B\63589239_p0_master1200.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Nier\60827915_p0.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Nier\66225419_p0.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Nier\9S\60781742_p0.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Nier\9S\61722600_p0.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Nier\9S\61876017_p0.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Nier\9S\63069385_p1_master1200.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Nier\9S\9s_by_mircogravina-db9pqdu.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Nier\9S\9s_by_noeyebrow-db0bg5f.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Nier\9S\9s_by_pi_yu-db2mftl.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="_TestImages\Game\Nier\nier_automata__pascal_s_village_by_snow_the_wanderer-dcdc2tl.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
     <PackageReference Include="Moq" Version="4.17.2" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.2.9" />
