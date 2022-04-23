@@ -139,11 +139,15 @@ namespace MICExtended
                 else
                     await Task.Delay(1000);
 
-                _viewModel.ProgressReport = new ProgressReport {
-                    CurrentTask = _viewModel.ProgressReport.TaskEndMessage
-                };
+                lblProgress.Text = _viewModel.ProgressReport.TaskEndMessage;
+                barProgress.Value = 0;
+                barProgress.Update();
 
-                await UpdateProgressBar();
+                //_viewModel.ProgressReport = new ProgressReport {
+                //    CurrentTask = _viewModel.ProgressReport.TaskEndMessage
+                //};
+
+                //await UpdateProgressBar();
             }
         }
         #endregion
@@ -168,7 +172,7 @@ namespace MICExtended
 
             Block();
 
-            _viewModel.DstDir = GetDefaultDstPath(_viewModel.SrcDir, _viewModel.Compression.ReplaceOriginal);
+            _viewModel.DstDir = GetDefaultDstPath(_viewModel.SrcDir, _viewModel.DstDir, _viewModel.Compression.ReplaceOriginal);
 
             _al.ClearCache();
 
@@ -189,7 +193,7 @@ namespace MICExtended
 
         private void chkReplaceOriginalFile_CheckedChanged(object sender, EventArgs e) {
             _viewModel.Compression.ReplaceOriginal = chkReplaceOriginalFile.Checked;
-            _viewModel.DstDir = GetDefaultDstPath(_viewModel.SrcDir, _viewModel.Compression.ReplaceOriginal);
+            _viewModel.DstDir = GetDefaultDstPath(_viewModel.SrcDir, _viewModel.DstDir, _viewModel.Compression.ReplaceOriginal);
 
             UpdateDirectoryDisplays();
             ReloadDstFiles();
@@ -322,9 +326,10 @@ namespace MICExtended
             UpdateDstList();
         }
 
-        private string GetDefaultDstPath(string srcDir, bool replaceOriginal) {
+        private string GetDefaultDstPath(string srcDir, string dstDir, bool replaceOriginal) {
             if(string.IsNullOrEmpty(srcDir)) return string.Empty;
             if(replaceOriginal) return srcDir;
+            if(!dstDir.Contains(srcDir) && !string.IsNullOrEmpty(dstDir)) return dstDir;
             return Path.Combine(srcDir, Constant.Pathing.COMPRESSED);
         }
         #endregion
