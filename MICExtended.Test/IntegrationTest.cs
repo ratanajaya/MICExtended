@@ -6,28 +6,26 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Serilog;
 
+#pragma warning disable CS8618
 namespace MICExtended.Test
 {
     [TestClass]
     public class IntegrationTest
     {
-#pragma warning disable CS8618
         AppLogic _al;
         string _libPath;
 
         [TestInitialize]
-        public void TestInitialize() {
+        public void Initialize() {
             _libPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "_TestImages");
 
             var loggerMock = (new Mock<ILogger>()).Object;
             _al = new AppLogic(new IoWrapper(), new ImageCompressor(loggerMock), loggerMock);
         }
 
-        [TestMethod]
-        public void FooBar() {
-            int x = 1 + 1;
-
-            Assert.AreEqual(x, 2);
+        [TestCleanup]
+        public void Cleanup() {
+            Directory.Delete(_libPath, true);
         }
 
         [TestMethod]
@@ -47,5 +45,6 @@ namespace MICExtended.Test
             Assert.IsTrue(extensions.Contains(Constant.Extension.PNG));
             Assert.IsTrue(!extensions.Contains(Constant.Extension.JPEG));
         }
+
     }
 }

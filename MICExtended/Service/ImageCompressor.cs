@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading;
 using MICExtended.Common;
 using Serilog;
+using System.Reflection;
 
 namespace MICExtended.Service
 {
@@ -19,14 +20,17 @@ namespace MICExtended.Service
     /// </summary>
     public class ImageCompressor
     {
+        //TODO refactor class to use IoWrapper
+
         private ILogger _log;
 
         public ImageCompressor(ILogger log) {
             _log = log;
         }
 
+        #region From ImageCompressor.cs
         public void CompressImage(string filePath, string savePath, int quality, Size? size, SupportedMimeType type) {
-            Bitmap img = Helper.GetBitmap(filePath);
+            Bitmap img = GetBitmap(filePath);
 
             var nSize = size ?? img.Size;
 
@@ -41,21 +45,21 @@ namespace MICExtended.Service
             img.Dispose();
         }
 
-        private void CompressImage(string filePath, Bitmap img, string savePath, int quality, Size size, SupportedMimeType type) {
+        void CompressImage(string filePath, Bitmap img, string savePath, int quality, Size size, SupportedMimeType type) {
             try {
                 byte[] originalFile = null;
-                if(Helper.SavingAsSameMimeType(filePath, type)) {
+                if(SavingAsSameMimeType(filePath, type)) {
                     originalFile = File.ReadAllBytes(filePath);
                 }
 
                 ImageCodecInfo imageCodecInfo;
 
-                if(type == SupportedMimeType.JPEG || Helper.IsRaw(filePath))
-                    imageCodecInfo = Helper.GetEncoderInfo("image/jpeg");
+                if(type == SupportedMimeType.JPEG || IsRaw(filePath))
+                    imageCodecInfo = GetEncoderInfo("image/jpeg");
                 else if(type == SupportedMimeType.PNG)
-                    imageCodecInfo = Helper.GetEncoderInfo("image/png");
+                    imageCodecInfo = GetEncoderInfo("image/png");
                 else
-                    imageCodecInfo = Helper.GetEncoderInfoFromOriginalFile(filePath);
+                    imageCodecInfo = GetEncoderInfoFromOriginalFile(filePath);
 
                 if(imageCodecInfo == null)
                     return;
@@ -63,7 +67,7 @@ namespace MICExtended.Service
                 EncoderParameters encoderParameters;
 
                 bool keepOriginalSize = false;
-                long OriginalFileSize = Helper.GetFileSize(filePath);
+                long OriginalFileSize = GetFileSize(filePath);
                 if(img.Size.Height <= size.Height || img.Size.Width <= size.Width) {
                     size = img.Size;
                     keepOriginalSize = true;
@@ -92,21 +96,21 @@ namespace MICExtended.Service
                 encoderParameters.Param[0] =
                     new EncoderParameter(Encoder.Quality, quality);
 
-                string fileSavePath = Helper.ChangeExensionToMimeType(savePath, type);
+                string fileSavePath = ChangeExensionToMimeType(savePath, type);
                 imgCompressed.Save(fileSavePath, imageCodecInfo, encoderParameters);
 
                 imgCompressed.Dispose();
 
                 if(fileSavePath.EndsWith(".png", StringComparison.CurrentCultureIgnoreCase)) {
                     if(quality < 100)
-                        Helper.CompressPNG(fileSavePath, quality, true);
-                    Helper.OptimizePNG(fileSavePath, true);
+                        CompressPNG(fileSavePath, quality, true);
+                    OptimizePNG(fileSavePath, true);
                 }
                 else if(fileSavePath.EndsWith(".jpeg", StringComparison.CurrentCultureIgnoreCase) || fileSavePath.EndsWith(".jpg", StringComparison.CurrentCultureIgnoreCase)) {
-                    Helper.MakeJpegProgressive(fileSavePath, true);
+                    MakeJpegProgressive(fileSavePath, true);
                 }
 
-                if(keepOriginalSize && Helper.SavingAsSameMimeType(filePath, type) && Helper.GetFileSize(fileSavePath) > OriginalFileSize) {
+                if(keepOriginalSize && SavingAsSameMimeType(filePath, type) && GetFileSize(fileSavePath) > OriginalFileSize) {
                     File.WriteAllBytes(fileSavePath, originalFile);
                 }
             }
@@ -115,7 +119,7 @@ namespace MICExtended.Service
             }
         }
 
-        public void SetImageComments(string filePath, Bitmap bmp, int quality) {
+        void SetImageComments(string filePath, Bitmap bmp, int quality) {
             string newVal = "Mass Image Compressor Compressed this image. https://sourceforge.net/projects/icompress/ with Quality:" + quality;
             try {
                 PropertyItem propItem;
@@ -139,8 +143,10 @@ namespace MICExtended.Service
                 _log.Error($"SetImageComments | {filePath} | {ex.Message}");
             }
         }
+        #endregion
 
-        public int GetQualityIfCompressed(string filePath, Bitmap bmp) {
+        #region From Helper.cs
+        int GetQualityIfCompressed(string filePath, Bitmap bmp) {
             try {
                 PropertyItem propItem;
 
@@ -166,5 +172,168 @@ namespace MICExtended.Service
                 return 100; //default to 100 in case of error.
             }
         }
+
+        bool IsSupportedImage(string filePath) {
+            if(Constant.Extension.ALLOWED.Contains(Path.GetExtension(filePath).ToUpper()))
+                return true;
+            return false;
+        }
+
+        bool IsRaw(string filePath) {
+            if(Constant.Extension.ALLOWED_RAW.Contains(Path.GetExtension(filePath).ToUpper()))
+                return true;
+            return false;
+        }
+
+        Bitmap GetBitmap(string filepath) {
+            if(IsRaw(filepath))
+                return GetRawImageData(filepath, GetFullPath(@"Exec\dcraw.exe"));
+            else
+                return new System.Drawing.Bitmap(filepath);
+        }
+
+        Bitmap GetRawImageData(string filePath, string execDcrawExe) {
+            var f = new FileInfo(execDcrawExe);
+            var args = "-c -T";
+
+            var startInfo = new System.Diagnostics.ProcessStartInfo(f.FullName) {
+                Arguments = args + " \"" + filePath + "\"",
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+            var process = System.Diagnostics.Process.Start(startInfo);
+
+            if(process == null) return null;
+
+            try {
+                return (System.Drawing.Bitmap)System.Drawing.Bitmap.FromStream(process.StandardOutput.BaseStream, true, true);
+            }
+            catch(Exception) {
+                // ignored
+            }
+
+            return null;
+        }
+
+        string GetFullPath(string relativePath) {
+            return Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), relativePath);
+        }
+
+        bool SavingAsSameMimeType(string filePath, SupportedMimeType type) {
+            string ext = Path.GetExtension(filePath);
+
+            if(type == SupportedMimeType.ORIGINAL)
+                return true;
+
+            if((ext.Equals(".jpeg", StringComparison.InvariantCultureIgnoreCase) || ext.Equals(".jpg", StringComparison.InvariantCultureIgnoreCase))
+                && (type == SupportedMimeType.JPEG))
+                return true;
+            if(ext.Equals(".png", StringComparison.InvariantCultureIgnoreCase) && (type == SupportedMimeType.PNG))
+                return true;
+            return false;
+        }
+
+        ImageCodecInfo GetEncoderInfo(String mimeType) {
+            int j;
+            ImageCodecInfo[] encoders;
+            encoders = ImageCodecInfo.GetImageEncoders();
+            for(j = 0; j < encoders.Length; ++j) {
+                if(encoders[j].MimeType == mimeType)
+                    return encoders[j];
+            }
+            return null;
+        }
+
+        ImageCodecInfo GetEncoderInfoFromOriginalFile(String filePath) {
+            string inputfileExt = "*" + Path.GetExtension(filePath).ToUpper();
+
+            int j;
+            ImageCodecInfo[] encoders;
+            encoders = ImageCodecInfo.GetImageEncoders();
+            for(j = 0; j < encoders.Length; ++j) {
+                if(encoders[j].FilenameExtension.Contains(inputfileExt))
+                    return encoders[j];
+            }
+
+            return null;
+        }
+
+        string ChangeExensionToMimeType(string fullFilePath, SupportedMimeType type) {
+            string dirPath = RemoveFileName(fullFilePath);
+
+            if(type == SupportedMimeType.JPEG || IsRaw(fullFilePath))
+                return
+                    AddDirectorySeparatorAtEnd(dirPath)
+                    + Path.GetFileNameWithoutExtension(fullFilePath)
+                    + Constant.Extension.JPEG;
+            else if(type == SupportedMimeType.PNG)
+                return
+                    AddDirectorySeparatorAtEnd(dirPath)
+                    + Path.GetFileNameWithoutExtension(fullFilePath)
+                    + Constant.Extension.PNG;
+            else
+                return fullFilePath;
+        }
+
+        string RemoveFileName(string pathWithFileName) {
+            string dirPath = "";
+
+            if(string.IsNullOrEmpty(Path.GetFileName(pathWithFileName)))
+                return "";
+
+            string[] DirsAndFile = pathWithFileName.Split(Path.DirectorySeparatorChar);
+            if(DirsAndFile == null) return "";
+
+            for(int i = 0; i < DirsAndFile.Length - 1; i++)
+                dirPath += DirsAndFile[i] + Path.DirectorySeparatorChar;
+            return dirPath;
+        }
+
+        string AddDirectorySeparatorAtEnd(string path) {
+            if(!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
+                return path + Path.DirectorySeparatorChar.ToString();
+            return path;
+        }
+
+        void CompressPNG(string filePath, int qualityLevel, bool waitForProcessToEnd) {
+            var exeFilePath = GetFullPath(@"Exec\pngquant.exe");
+            var args = " --quality=0-" + qualityLevel + " -f --ext .png ";
+
+            RunExternalOperationOnImage(filePath, exeFilePath, args, waitForProcessToEnd);
+        }
+
+
+        void OptimizePNG(string filePath, bool waitForProcessToEnd) {
+            var exeFilePath = GetFullPath(@"Exec\optipng.exe");
+            var args = "-o2 -strip all";
+
+            RunExternalOperationOnImage(filePath, exeFilePath, args, waitForProcessToEnd);
+        }
+
+        void RunExternalOperationOnImage(string filePath, string exeFilePath, string args, bool waitForProcessToEnd) {
+            var f = new FileInfo(exeFilePath);
+            var startInfo = new System.Diagnostics.ProcessStartInfo(f.FullName) {
+                Arguments = args + " \"" + filePath + "\"",
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+            var process = System.Diagnostics.Process.Start(startInfo);
+
+            if(waitForProcessToEnd)
+                process.WaitForExit();
+        }
+
+        long GetFileSize(string filePath) {
+            return new FileInfo(filePath).Length;
+        }
+
+        void MakeJpegProgressive(string filePath, bool waitForProcessToEnd) {
+            var exeFilePath = GetFullPath(@"Exec\jpegtran.exe");
+            var args = "-copy all -optimize -progressive -outfile " + " \"" + filePath + "\"";
+            RunExternalOperationOnImage(filePath, exeFilePath, args, waitForProcessToEnd);
+        }
+        #endregion
     }
 }
