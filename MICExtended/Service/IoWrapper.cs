@@ -41,5 +41,9 @@ namespace MICExtended.Service
         public Stream GetStream(string path) {
             return new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
         }
+
+        public void DeleteFile(string path) { 
+            File.Delete(path);
+        }
     }
 }
