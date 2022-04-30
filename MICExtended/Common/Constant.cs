@@ -37,6 +37,8 @@ namespace MICExtended.Common
                     ".raw" , ".rwl" , ".rw2" , ".rwz" , ".sr2" , ".srf" , ".srw" , ".x3f"
                 });
         }
+
+        public const int COMMENT_PROPID = 0x9286;
     }
 
     public enum SupportedMimeType

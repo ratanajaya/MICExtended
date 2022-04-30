@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Drawing.Imaging;
 
 namespace MICExtended.Model
 {
@@ -13,9 +14,11 @@ namespace MICExtended.Model
         public string RootPath { get; set; } = string.Empty;
         public string FilePath { get; set; } = string.Empty;
         public string Extension { get; set;} = string.Empty;
+        public string Comment { get; set; } = string.Empty;
         public long? Size { get; set; }
         public int Height { get; set; }
         public int Width { get; set; }
+        public PropertyItem[] PropertyItems { get; set; }
 
         public string Name { 
             get {
