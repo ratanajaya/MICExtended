@@ -6,6 +6,8 @@ using System.Linq;
 
 namespace MICExtended
 {
+#pragma warning disable CS8618
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
     public partial class Form1 : Form
     {
         AppLogic _al;
@@ -13,7 +15,6 @@ namespace MICExtended
         Progress<ProgressReport> _progress;
 
         #region Initialization
-        #pragma warning disable CS8618
         public Form1(AppLogic al) {
             InitializeComponent();
             _al = al;
@@ -45,6 +46,8 @@ namespace MICExtended
 
             UpdateCompressionParameter();
             await UpdateProgressBar();
+
+            this.AllowDrop = true;
         }
         #endregion
 
@@ -167,10 +170,18 @@ namespace MICExtended
 
         #region Event Handlers
         private async void btnOpenSrc_Click(object sender, EventArgs e) {
-            _viewModel.SrcDir = OpenDirectorySelector();
-            if(string.IsNullOrEmpty(_viewModel.SrcDir)) return;
-
+            var path = OpenDirectorySelector();
+            if(string.IsNullOrEmpty(path)) return;
+            
             Block();
+
+            await SetSrcDir(path);
+
+            Unblock();
+        }
+
+        async Task SetSrcDir(string path) {
+            _viewModel.SrcDir = path;
 
             _viewModel.DstDir = GetDefaultDstPath(_viewModel.SrcDir, _viewModel.DstDir, _viewModel.Compression.ReplaceOriginal);
 
@@ -178,17 +189,21 @@ namespace MICExtended
 
             UpdateDirectoryDisplays();
             await ReloadFiles();
-
-            Unblock();
         }
 
-        private void btnOpenDst_Click(object sender, EventArgs e) {
-            _viewModel.DstDir = OpenDirectorySelector();
-            if(string.IsNullOrEmpty(_viewModel.DstDir)) return;
+        void SetDstDir(string path) {
+            _viewModel.DstDir = path;
 
             _viewModel.DstFiles = _al.GetCompressedFilePreview(_viewModel.DstDir, _viewModel.SrcFiles, _viewModel.Compression);
             UpdateDirectoryDisplays();
             ReloadDstFiles();
+        }
+
+        private void btnOpenDst_Click(object sender, EventArgs e) {
+            var path = OpenDirectorySelector();
+            if(string.IsNullOrEmpty(path)) return;
+
+            SetDstDir(path);
         }
 
         private void chkReplaceOriginalFile_CheckedChanged(object sender, EventArgs e) {
@@ -347,5 +362,22 @@ namespace MICExtended
             //TODO column sorting
         }
         #endregion
+
+        private void Form1_DragEnter(object sender, DragEventArgs e) {
+            if(e.Data.GetDataPresent(DataFormats.FileDrop) && Directory.Exists(((string[])e.Data.GetData(DataFormats.FileDrop))[0]))
+                e.Effect = DragDropEffects.Copy;
+        }
+
+        async void Form1_DragDrop(object sender, DragEventArgs e) {
+            if(!e.Data.GetDataPresent(DataFormats.FileDrop)) return;
+            var path = ((string[])e.Data.GetData(DataFormats.FileDrop))[0];
+            if(!Directory.Exists(path)) return;
+
+            Block();
+
+            await SetSrcDir(path);
+
+            Unblock();
+        }
     }
 }

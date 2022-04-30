@@ -78,7 +78,7 @@ namespace MICExtended.Service
         public List<FileModel> GetCompressedFilePreview(string dstPath, List<FileModel> sourceFiles, CompressionCondition selectionCondition) {
             var result = sourceFiles.AsParallel().Select(a => new FileModel {
                 FilePath = Path.Combine(dstPath,
-                    selectionCondition.ConvertTo == SupportedMimeType.JPEG ? Path.ChangeExtension(a.RelativePath, Constant.Extension.JPG) :
+                    selectionCondition.ConvertTo == SupportedMimeType.JPEG ? Path.ChangeExtension(a.RelativePath, Constant.Extension.JPEG) :
                     selectionCondition.ConvertTo == SupportedMimeType.PNG ? Path.ChangeExtension(a.RelativePath, Constant.Extension.PNG) :
                     a.RelativePath),
                 Size = null
@@ -261,6 +261,9 @@ namespace MICExtended.Service
                 var dst = dstFiles[i];
                 try {
                     _ic.CompressImage(src.FilePath, dst.FilePath, compressionCondition.Quality, null, compressionCondition.ConvertTo);
+                    if(compressionCondition.ReplaceOriginal && src.FilePath != dst.FilePath) {
+                        _io.DeleteFile(src.FilePath);
+                    }
                 }
                 catch(Exception ex) {
                     _log.Error($"CompressFiles | {src.FilePath} | {dst.FilePath} | {ex.Message}");
