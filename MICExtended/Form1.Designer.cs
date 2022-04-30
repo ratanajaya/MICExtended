@@ -39,6 +39,7 @@
             this.srcColBytesPerPixel = new System.Windows.Forms.ColumnHeader();
             this.btnCompress = new System.Windows.Forms.Button();
             this.grpSelection = new System.Windows.Forms.GroupBox();
+            this.chkSkipCompressed = new System.Windows.Forms.CheckBox();
             this.numMinB100 = new System.Windows.Forms.NumericUpDown();
             this.numMinSize = new System.Windows.Forms.NumericUpDown();
             this.chkMinB100 = new System.Windows.Forms.CheckBox();
@@ -206,6 +207,7 @@
             // 
             // grpSelection
             // 
+            this.grpSelection.Controls.Add(this.chkSkipCompressed);
             this.grpSelection.Controls.Add(this.numMinB100);
             this.grpSelection.Controls.Add(this.numMinSize);
             this.grpSelection.Controls.Add(this.chkMinB100);
@@ -218,6 +220,17 @@
             this.grpSelection.TabIndex = 2;
             this.grpSelection.TabStop = false;
             this.grpSelection.Text = "File Selection";
+            // 
+            // chkSkipCompressed
+            // 
+            this.chkSkipCompressed.AutoSize = true;
+            this.chkSkipCompressed.Location = new System.Drawing.Point(143, 79);
+            this.chkSkipCompressed.Name = "chkSkipCompressed";
+            this.chkSkipCompressed.Size = new System.Drawing.Size(158, 19);
+            this.chkSkipCompressed.TabIndex = 16;
+            this.chkSkipCompressed.Text = "Skip Compressed Images";
+            this.chkSkipCompressed.UseVisualStyleBackColor = true;
+            this.chkSkipCompressed.CheckedChanged += new System.EventHandler(this.chkSkipCompressed_CheckedChanged);
             // 
             // numMinB100
             // 
@@ -346,10 +359,10 @@
             this.rbCtJpeg.AutoSize = true;
             this.rbCtJpeg.Location = new System.Drawing.Point(6, 8);
             this.rbCtJpeg.Name = "rbCtJpeg";
-            this.rbCtJpeg.Size = new System.Drawing.Size(50, 19);
+            this.rbCtJpeg.Size = new System.Drawing.Size(44, 19);
             this.rbCtJpeg.TabIndex = 0;
             this.rbCtJpeg.TabStop = true;
-            this.rbCtJpeg.Text = "JPEG";
+            this.rbCtJpeg.Text = "JPG";
             this.rbCtJpeg.UseVisualStyleBackColor = true;
             this.rbCtJpeg.CheckedChanged += new System.EventHandler(this.rbCt_CheckedChanged);
             // 
@@ -641,5 +654,6 @@
         private NumericUpDown numMinB100;
         private NumericUpDown numMinSize;
         private CheckBox chkReplaceOriginalFile;
+        private CheckBox chkSkipCompressed;
     }
 }

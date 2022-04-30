@@ -1,10 +1,13 @@
-﻿using MICExtended.Abstraction;
+﻿using MetadataExtractor;
+using MetadataExtractor.Formats.Exif;
+using MICExtended.Abstraction;
 using MICExtended.Common;
 using MICExtended.Model;
 using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -13,6 +16,7 @@ using System.Threading.Tasks;
 
 namespace MICExtended.Service
 {
+#pragma warning disable CS8625
     public class AppLogic
     {
         private IIoWapper _io;
@@ -78,7 +82,7 @@ namespace MICExtended.Service
         public List<FileModel> GetCompressedFilePreview(string dstPath, List<FileModel> sourceFiles, CompressionCondition selectionCondition) {
             var result = sourceFiles.AsParallel().Select(a => new FileModel {
                 FilePath = Path.Combine(dstPath,
-                    selectionCondition.ConvertTo == SupportedMimeType.JPEG ? Path.ChangeExtension(a.RelativePath, Constant.Extension.JPEG) :
+                    selectionCondition.ConvertTo == SupportedMimeType.JPEG ? Path.ChangeExtension(a.RelativePath, Constant.Extension.JPG) :
                     selectionCondition.ConvertTo == SupportedMimeType.PNG ? Path.ChangeExtension(a.RelativePath, Constant.Extension.PNG) :
                     a.RelativePath),
                 Size = null
@@ -120,12 +124,10 @@ namespace MICExtended.Service
                 Parallel.For(0, filePaths.Count, new ParallelOptions { MaxDegreeOfParallelism = 8 }, (i, state) => {
                     var filePath = filePaths[i];
                     try {
-                        result[i] = GetFileViewModel(filePath, path);
+                        result[i] = GetFileViewModel(filePath, path, true);
                     }
                     catch(Exception ex) {
-                        #pragma warning disable CS8625
                         result[i] = null;
-                        #pragma warning restore CS8625
                         _log.Error($"GetFileViewModels | Parallel.For | {filePath} | {ex.Message}");
                     }
 
@@ -149,7 +151,8 @@ namespace MICExtended.Service
             var selectedData = allData.Where(a =>
                 selection.FileTypes.Any(b => b.Equals(a.Extension, StringComparison.OrdinalIgnoreCase)) &&
                 (!selection.UseMinB100 || a.BytesPer100Pixel >= selection.MinB100) &&
-                (!selection.UseMinSize || a.Size >= selection.MinSize * 1024)
+                (!selection.UseMinSize || a.Size >= selection.MinSize * 1024) &&
+                (!selection.SkipCompressed || !a.Comment.StartsWith("Mass Image Compressor"))
             ).ToList();
 
             var elapsed = sw.Elapsed;
@@ -170,7 +173,7 @@ namespace MICExtended.Service
         private IEnumerable<string> GetSuitableFilePaths(string path) {
             var subDirs = _io.GetDirectories(path).Where(a => !a.EndsWith(Constant.Pathing.SCOMPRESSED));
             var filePathsFromSubdir = subDirs.SelectMany(s => GetSuitableFilePaths(s));
-            var filePathsFromRoot = Directory.EnumerateFiles(path, "*", SearchOption.TopDirectoryOnly);
+            var filePathsFromRoot = System.IO.Directory.EnumerateFiles(path, "*", SearchOption.TopDirectoryOnly); //TODO
 
             var result = filePathsFromRoot.Concat(filePathsFromSubdir)
                          .Where(f => Constant.Extension.ALLOWED.Any(a => a.Equals(Path.GetExtension(f), StringComparison.OrdinalIgnoreCase)));
@@ -201,9 +204,19 @@ namespace MICExtended.Service
             #endregion
         }
 
-        private FileModel GetFileViewModel(string path, string rootPath) {
+        private FileModel GetFileViewModel(string path, string rootPath, bool loadComment = false) {
             using(var fileStream = _io.GetStream(path)) {
                 using(var img = Image.FromStream(fileStream, false, false)) {
+                    var comment = new Func<string>(() => {
+                        if(!loadComment) return string.Empty;
+
+                        var commentProp = img.PropertyItems.FirstOrDefault(a => a.Id == Constant.COMMENT_PROPID);
+                        if(commentProp != null)
+                            return Encoding.UTF8.GetString(commentProp?.Value).Replace("\0", string.Empty);
+
+                        return "";
+                    })();
+
                     return new FileModel {
                         RootPath = rootPath,
                         FilePath = path,
@@ -211,6 +224,7 @@ namespace MICExtended.Service
                         Size = fileStream.Length,
                         Height = img.Height,
                         Width = img.Width,
+                        Comment = comment
                     };
                 }
             }
