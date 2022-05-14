@@ -1,10 +1,13 @@
-﻿using MICExtended.Abstraction;
+﻿using MetadataExtractor;
+using MetadataExtractor.Formats.Exif;
+using MICExtended.Abstraction;
 using MICExtended.Common;
 using MICExtended.Model;
 using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -13,6 +16,7 @@ using System.Threading.Tasks;
 
 namespace MICExtended.Service
 {
+#pragma warning disable CS8625
     public class AppLogic
     {
         private IIoWapper _io;
@@ -120,12 +124,10 @@ namespace MICExtended.Service
                 Parallel.For(0, filePaths.Count, new ParallelOptions { MaxDegreeOfParallelism = 8 }, (i, state) => {
                     var filePath = filePaths[i];
                     try {
-                        result[i] = GetFileViewModel(filePath, path);
+                        result[i] = GetFileViewModel(filePath, path, true);
                     }
                     catch(Exception ex) {
-                        #pragma warning disable CS8625
                         result[i] = null;
-                        #pragma warning restore CS8625
                         _log.Error($"GetFileViewModels | Parallel.For | {filePath} | {ex.Message}");
                     }
 
@@ -149,7 +151,8 @@ namespace MICExtended.Service
             var selectedData = allData.Where(a =>
                 selection.FileTypes.Any(b => b.Equals(a.Extension, StringComparison.OrdinalIgnoreCase)) &&
                 (!selection.UseMinB100 || a.BytesPer100Pixel >= selection.MinB100) &&
-                (!selection.UseMinSize || a.Size >= selection.MinSize * 1024)
+                (!selection.UseMinSize || a.Size >= selection.MinSize * 1024) &&
+                (!selection.SkipCompressed || !a.Comment.StartsWith("Mass Image Compressor"))
             ).ToList();
 
             var elapsed = sw.Elapsed;
@@ -170,7 +173,7 @@ namespace MICExtended.Service
         private IEnumerable<string> GetSuitableFilePaths(string path) {
             var subDirs = _io.GetDirectories(path).Where(a => !a.EndsWith(Constant.Pathing.SCOMPRESSED));
             var filePathsFromSubdir = subDirs.SelectMany(s => GetSuitableFilePaths(s));
-            var filePathsFromRoot = Directory.EnumerateFiles(path, "*", SearchOption.TopDirectoryOnly);
+            var filePathsFromRoot = System.IO.Directory.EnumerateFiles(path, "*", SearchOption.TopDirectoryOnly);
 
             var result = filePathsFromRoot.Concat(filePathsFromSubdir)
                          .Where(f => Constant.Extension.ALLOWED.Any(a => a.Equals(Path.GetExtension(f), StringComparison.OrdinalIgnoreCase)));
@@ -201,9 +204,19 @@ namespace MICExtended.Service
             #endregion
         }
 
-        private FileModel GetFileViewModel(string path, string rootPath) {
+        private FileModel GetFileViewModel(string path, string rootPath, bool loadComment = false) {
             using(var fileStream = _io.GetStream(path)) {
                 using(var img = Image.FromStream(fileStream, false, false)) {
+                    var comment = new Func<string>(() => {
+                        if(!loadComment) return string.Empty;
+
+                        var commentProp = img.PropertyItems.FirstOrDefault(a => a.Id == Constant.COMMENT_PROPID);
+                        if(commentProp != null)
+                            return Encoding.UTF8.GetString(commentProp?.Value).Replace("\0", string.Empty);
+
+                        return "";
+                    })();
+
                     return new FileModel {
                         RootPath = rootPath,
                         FilePath = path,
@@ -211,6 +224,7 @@ namespace MICExtended.Service
                         Size = fileStream.Length,
                         Height = img.Height,
                         Width = img.Width,
+                        Comment = comment
                     };
                 }
             }
@@ -254,13 +268,34 @@ namespace MICExtended.Service
             };
             progress.Report(parallelReport);
 
+            //Parallel.For(0, srcFiles.Count, new ParallelOptions { MaxDegreeOfParallelism = 1 }, (i, state) => {
             Parallel.For(0, srcFiles.Count, (i, state) => {
                 //DO NOT perform operation that may target toward the same filesystem entity as it can cause race condition
                 //Performing _io.CreateDirectory() here can cause race condition
                 var src = srcFiles[i];
                 var dst = dstFiles[i];
                 try {
-                    _ic.CompressImage(src.FilePath, dst.FilePath, compressionCondition.Quality, null, compressionCondition.ConvertTo);
+                    var newSize = new Func<Size>(() => {
+                        if(compressionCondition.Dimension == Dimension.NewDimensionInPct) {
+                            var newWidth = (int)(src.Width * (float)compressionCondition.DimensionInPct / 100);
+                            var newHeight = (int)(src.Height * (float)compressionCondition.DimensionInPct / 100);
+
+                            return new Size(newWidth, newHeight);
+                        }
+                        else if(compressionCondition.Dimension == Dimension.FixedWidth) {
+                            float pct = (float)compressionCondition.DimensionFixedWidth / src.Width;
+                            var newHeight = (int)(src.Height * pct);
+
+                            return new Size(compressionCondition.DimensionFixedWidth, newHeight);
+                        }
+
+                        return new Size(src.Width, src.Height);
+                    })();
+
+                    _ic.CompressImage(src.FilePath, dst.FilePath, compressionCondition.Quality, newSize, compressionCondition.ConvertTo);
+                    if(compressionCondition.ReplaceOriginal && src.FilePath != dst.FilePath) {
+                        _io.DeleteFile(src.FilePath);
+                    }
                 }
                 catch(Exception ex) {
                     _log.Error($"CompressFiles | {src.FilePath} | {dst.FilePath} | {ex.Message}");

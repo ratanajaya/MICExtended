@@ -19,5 +19,6 @@ namespace MICExtended.Abstraction
         Task<string> ReadAllText(string path);
         Task WriteAllText(string path, string text);
         Stream GetStream(string path);
+        void DeleteFile(string path);
     }
 }

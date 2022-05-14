@@ -15,5 +15,6 @@ namespace MICExtended.Model
         public bool UseMinB100 { get; set; }
         public int MinSize { get; set; }
         public int MinB100 { get; set; }
+        public bool SkipCompressed { get; set; }
     }
 }

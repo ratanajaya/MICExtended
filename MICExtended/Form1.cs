@@ -6,6 +6,8 @@ using System.Linq;
 
 namespace MICExtended
 {
+#pragma warning disable CS8618
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
     public partial class Form1 : Form
     {
         AppLogic _al;
@@ -13,7 +15,6 @@ namespace MICExtended
         Progress<ProgressReport> _progress;
 
         #region Initialization
-        #pragma warning disable CS8618
         public Form1(AppLogic al) {
             InitializeComponent();
             _al = al;
@@ -40,11 +41,13 @@ namespace MICExtended
 
             UpdateDirectoryDisplays();
             UpdateClFileType();
-            UpdateFileSelectionMinParameter();
+            updateFileSelectionChk();
             UpdateFileSelectionMinParameterValue();
 
             UpdateCompressionParameter();
             await UpdateProgressBar();
+
+            this.AllowDrop = true;
         }
         #endregion
 
@@ -114,11 +117,14 @@ namespace MICExtended
             }
         }
 
-        private void UpdateFileSelectionMinParameter() {
+        private void updateFileSelectionChk() {
             chkMinSize.Checked = _viewModel.Selection.UseMinSize;
-            chkMinB100.Checked = _viewModel.Selection.UseMinB100;
             numMinSize.Enabled = _viewModel.Selection.UseMinSize;
+
+            chkMinB100.Checked = _viewModel.Selection.UseMinB100;
             numMinB100.Enabled = _viewModel.Selection.UseMinB100;
+
+            chkSkipCompressed.Checked = _viewModel.Selection.SkipCompressed;
         }
 
         private void UpdateFileSelectionMinParameterValue() {
@@ -167,33 +173,26 @@ namespace MICExtended
 
         #region Event Handlers
         private async void btnOpenSrc_Click(object sender, EventArgs e) {
-            _viewModel.SrcDir = OpenDirectorySelector();
-            if(string.IsNullOrEmpty(_viewModel.SrcDir)) return;
-
+            var path = OpenDirectorySelector();
+            if(string.IsNullOrEmpty(path)) return;
+            
             Block();
 
-            _viewModel.DstDir = GetDefaultDstPath(_viewModel.SrcDir, _viewModel.DstDir, _viewModel.Compression.ReplaceOriginal);
-
-            _al.ClearCache();
-
-            UpdateDirectoryDisplays();
-            await ReloadFiles();
+            await SetSrcDir(path);
 
             Unblock();
         }
 
         private void btnOpenDst_Click(object sender, EventArgs e) {
-            _viewModel.DstDir = OpenDirectorySelector();
-            if(string.IsNullOrEmpty(_viewModel.DstDir)) return;
+            var path = OpenDirectorySelector();
+            if(string.IsNullOrEmpty(path)) return;
 
-            _viewModel.DstFiles = _al.GetCompressedFilePreview(_viewModel.DstDir, _viewModel.SrcFiles, _viewModel.Compression);
-            UpdateDirectoryDisplays();
-            ReloadDstFiles();
+            SetDstDir(path);
         }
 
         private void chkReplaceOriginalFile_CheckedChanged(object sender, EventArgs e) {
             _viewModel.Compression.ReplaceOriginal = chkReplaceOriginalFile.Checked;
-            _viewModel.DstDir = GetDefaultDstPath(_viewModel.SrcDir, _viewModel.DstDir, _viewModel.Compression.ReplaceOriginal);
+            _viewModel.DstDir = GetDefaultDstPath(_viewModel.SrcDir, _viewModel.SrcDir, _viewModel.DstDir, _viewModel.Compression.ReplaceOriginal);
 
             UpdateDirectoryDisplays();
             ReloadDstFiles();
@@ -280,7 +279,7 @@ namespace MICExtended
             _viewModel.Selection.UseMinSize = chkMinSize.Checked;
             _viewModel.Selection.UseMinB100 = chkMinB100.Checked;
 
-            UpdateFileSelectionMinParameter();
+            updateFileSelectionChk();
             await ReloadFiles();
         }
 
@@ -292,6 +291,28 @@ namespace MICExtended
         private async void numMinB100_ValueChanged(object sender, EventArgs e) {
             _viewModel.Selection.MinB100 = (int)numMinB100.Value;
             await ReloadFiles();
+        }
+
+        private async void chkSkipCompressed_CheckedChanged(object sender, EventArgs e) {
+            _viewModel.Selection.SkipCompressed = chkSkipCompressed.Checked;
+            await ReloadFiles();
+        }
+
+        private void Form1_DragEnter(object sender, DragEventArgs e) {
+            if(e.Data.GetDataPresent(DataFormats.FileDrop) && Directory.Exists(((string[])e.Data.GetData(DataFormats.FileDrop))[0]))
+                e.Effect = DragDropEffects.Copy;
+        }
+
+        async void Form1_DragDrop(object sender, DragEventArgs e) {
+            if(!e.Data.GetDataPresent(DataFormats.FileDrop)) return;
+            var path = ((string[])e.Data.GetData(DataFormats.FileDrop))[0];
+            if(!Directory.Exists(path)) return;
+
+            Block();
+
+            await SetSrcDir(path);
+
+            Unblock();
         }
         #endregion
 
@@ -326,11 +347,31 @@ namespace MICExtended
             UpdateDstList();
         }
 
-        private string GetDefaultDstPath(string srcDir, string dstDir, bool replaceOriginal) {
+        private string GetDefaultDstPath(string srcDir, string oldSrcDir, string dstDir, bool replaceOriginal) {
             if(string.IsNullOrEmpty(srcDir)) return string.Empty;
             if(replaceOriginal) return srcDir;
-            if(!dstDir.Contains(srcDir) && !string.IsNullOrEmpty(dstDir)) return dstDir;
+            if(!dstDir.Contains(oldSrcDir) && !string.IsNullOrEmpty(dstDir)) return dstDir;
             return Path.Combine(srcDir, Constant.Pathing.COMPRESSED);
+        }
+
+        async Task SetSrcDir(string path) {
+            var oldSrcDir = _viewModel.SrcDir;
+            _viewModel.SrcDir = path;
+
+            _viewModel.DstDir = GetDefaultDstPath(_viewModel.SrcDir, oldSrcDir, _viewModel.DstDir, _viewModel.Compression.ReplaceOriginal);
+
+            _al.ClearCache();
+
+            UpdateDirectoryDisplays();
+            await ReloadFiles();
+        }
+
+        void SetDstDir(string path) {
+            _viewModel.DstDir = path;
+
+            _viewModel.DstFiles = _al.GetCompressedFilePreview(_viewModel.DstDir, _viewModel.SrcFiles, _viewModel.Compression);
+            UpdateDirectoryDisplays();
+            ReloadDstFiles();
         }
         #endregion
 
