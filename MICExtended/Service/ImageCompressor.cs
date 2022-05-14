@@ -29,17 +29,15 @@ namespace MICExtended.Service
         }
 
         #region From ImageCompressor.cs
-        public void CompressImage(string filePath, string savePath, int quality, Size? size, SupportedMimeType type) {
+        public void CompressImage(string filePath, string savePath, int quality, Size size, SupportedMimeType type) {
             Bitmap img = GetBitmap(filePath);
-
-            var nSize = size ?? img.Size;
 
             this.CompressImage(
                 filePath,
                 img,
                 savePath,
                 quality,
-                nSize,
+                size,
                 type
                     );
             img.Dispose();
@@ -124,11 +122,11 @@ namespace MICExtended.Service
             try {
                 PropertyItem propItem;
 
-                if(bmp.PropertyIdList.Contains(0x9286))
-                    propItem = bmp.GetPropertyItem(0x9286);
+                if(bmp.PropertyIdList.Contains(Constant.COMMENT_PROPID))
+                    propItem = bmp.GetPropertyItem(Constant.COMMENT_PROPID);
                 else {
                     propItem = (PropertyItem)System.Runtime.Serialization.FormatterServices.GetUninitializedObject(typeof(PropertyItem));
-                    propItem.Id = 0x9286;
+                    propItem.Id = Constant.COMMENT_PROPID;
                 }
 
                 propItem.Len = newVal.Length + 1;
@@ -266,7 +264,7 @@ namespace MICExtended.Service
                 return
                     AddDirectorySeparatorAtEnd(dirPath)
                     + Path.GetFileNameWithoutExtension(fullFilePath)
-                    + Constant.Extension.JPEG;
+                    + Constant.Extension.JPG;
             else if(type == SupportedMimeType.PNG)
                 return
                     AddDirectorySeparatorAtEnd(dirPath)
