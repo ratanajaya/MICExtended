@@ -29,17 +29,15 @@ namespace MICExtended.Service
         }
 
         #region From ImageCompressor.cs
-        public void CompressImage(string filePath, string savePath, int quality, Size? size, SupportedMimeType type) {
+        public void CompressImage(string filePath, string savePath, int quality, Size size, SupportedMimeType type) {
             Bitmap img = GetBitmap(filePath);
-
-            var nSize = size ?? img.Size;
 
             this.CompressImage(
                 filePath,
                 img,
                 savePath,
                 quality,
-                nSize,
+                size,
                 type
                     );
             img.Dispose();

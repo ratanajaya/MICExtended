@@ -173,7 +173,7 @@ namespace MICExtended.Service
         private IEnumerable<string> GetSuitableFilePaths(string path) {
             var subDirs = _io.GetDirectories(path).Where(a => !a.EndsWith(Constant.Pathing.SCOMPRESSED));
             var filePathsFromSubdir = subDirs.SelectMany(s => GetSuitableFilePaths(s));
-            var filePathsFromRoot = System.IO.Directory.EnumerateFiles(path, "*", SearchOption.TopDirectoryOnly); //TODO
+            var filePathsFromRoot = System.IO.Directory.EnumerateFiles(path, "*", SearchOption.TopDirectoryOnly);
 
             var result = filePathsFromRoot.Concat(filePathsFromSubdir)
                          .Where(f => Constant.Extension.ALLOWED.Any(a => a.Equals(Path.GetExtension(f), StringComparison.OrdinalIgnoreCase)));
@@ -268,13 +268,31 @@ namespace MICExtended.Service
             };
             progress.Report(parallelReport);
 
+            //Parallel.For(0, srcFiles.Count, new ParallelOptions { MaxDegreeOfParallelism = 1 }, (i, state) => {
             Parallel.For(0, srcFiles.Count, (i, state) => {
                 //DO NOT perform operation that may target toward the same filesystem entity as it can cause race condition
                 //Performing _io.CreateDirectory() here can cause race condition
                 var src = srcFiles[i];
                 var dst = dstFiles[i];
                 try {
-                    _ic.CompressImage(src.FilePath, dst.FilePath, compressionCondition.Quality, null, compressionCondition.ConvertTo);
+                    var newSize = new Func<Size>(() => {
+                        if(compressionCondition.Dimension == Dimension.NewDimensionInPct) {
+                            var newWidth = (int)(src.Width * (float)compressionCondition.DimensionInPct / 100);
+                            var newHeight = (int)(src.Height * (float)compressionCondition.DimensionInPct / 100);
+
+                            return new Size(newWidth, newHeight);
+                        }
+                        else if(compressionCondition.Dimension == Dimension.FixedWidth) {
+                            float pct = (float)compressionCondition.DimensionFixedWidth / src.Width;
+                            var newHeight = (int)(src.Height * pct);
+
+                            return new Size(compressionCondition.DimensionFixedWidth, newHeight);
+                        }
+
+                        return new Size(src.Width, src.Height);
+                    })();
+
+                    _ic.CompressImage(src.FilePath, dst.FilePath, compressionCondition.Quality, newSize, compressionCondition.ConvertTo);
                     if(compressionCondition.ReplaceOriginal && src.FilePath != dst.FilePath) {
                         _io.DeleteFile(src.FilePath);
                     }
