@@ -10,21 +10,23 @@ namespace MICExtended
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
     public partial class Form1 : Form
     {
+        AppSettingJson _appSetting;
         AppLogic _al;
         Form1ViewModel _viewModel;
         Progress<ProgressReport> _progress;
 
         #region Initialization
-        public Form1(AppLogic al) {
+        public Form1(AppLogic al, AppSettingJson appSetting) {
             InitializeComponent();
             _al = al;
+            _appSetting = appSetting;
         }
 
         private async void Form1_Load(object sender, EventArgs e) {
-            var config = await _al.LoadState();
+            var persistentState = await _al.LoadState();
             _viewModel = new Form1ViewModel {
-                Selection = config.Selection,
-                Compression = config.Compression,
+                Selection = persistentState.Selection,
+                Compression = persistentState.Compression,
             };
 
             _progress = new Progress<ProgressReport>();
@@ -36,7 +38,7 @@ namespace MICExtended
                 await _al.SaveState(_viewModel);
             });
 
-            clFileType.Items.AddRange(Constant.Extension.ALLOWED.ToArray());
+            clFileType.Items.AddRange(_appSetting.AllowedExtensions);
             clFileType.CheckOnClick = true;
 
             UpdateDirectoryDisplays();

@@ -19,6 +19,7 @@ namespace MICExtended.Service
 #pragma warning disable CS8625
     public class AppLogic
     {
+        private AppSettingJson _appSetting;
         private IIoWapper _io;
         private ImageCompressor _ic;
         private ILogger _log;
@@ -26,10 +27,11 @@ namespace MICExtended.Service
 
         private Dictionary<string, List<FileModel>> _fileCache = new Dictionary<string, List<FileModel>>();
 
-        public AppLogic(IIoWapper io, ImageCompressor ic, ILogger log) {
+        public AppLogic(IIoWapper io, ImageCompressor ic, ILogger log, AppSettingJson appSetting) {
             _io = io;
             _ic = ic;
             _log = log;
+            _appSetting = appSetting;
         }
 
         #region Persistent State
@@ -176,7 +178,7 @@ namespace MICExtended.Service
             var filePathsFromRoot = System.IO.Directory.EnumerateFiles(path, "*", SearchOption.TopDirectoryOnly);
 
             var result = filePathsFromRoot.Concat(filePathsFromSubdir)
-                         .Where(f => Constant.Extension.ALLOWED.Any(a => a.Equals(Path.GetExtension(f), StringComparison.OrdinalIgnoreCase)));
+                         .Where(f => _appSetting.AllowedExtensions.Any(a => a.Equals(Path.GetExtension(f), StringComparison.OrdinalIgnoreCase)));
 
             return result;
 
