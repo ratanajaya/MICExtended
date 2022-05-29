@@ -11,6 +11,7 @@ using System.Threading;
 using MICExtended.Common;
 using Serilog;
 using System.Reflection;
+using MICExtended.Model;
 
 namespace MICExtended.Service
 {
@@ -21,11 +22,12 @@ namespace MICExtended.Service
     public class ImageCompressor
     {
         //TODO refactor class to use IoWrapper
-
+        private AppSettingJson _appSetting;
         private ILogger _log;
 
-        public ImageCompressor(ILogger log) {
+        public ImageCompressor(ILogger log, AppSettingJson appSetting) {
             _log = log;
+            _appSetting = appSetting;
         }
 
         #region From ImageCompressor.cs
@@ -172,15 +174,11 @@ namespace MICExtended.Service
         }
 
         bool IsSupportedImage(string filePath) {
-            if(Constant.Extension.ALLOWED.Contains(Path.GetExtension(filePath).ToUpper()))
-                return true;
-            return false;
+            return _appSetting.AllowedExtensions.Contains(Path.GetExtension(filePath).ToUpper());
         }
 
         bool IsRaw(string filePath) {
-            if(Constant.Extension.ALLOWED_RAW.Contains(Path.GetExtension(filePath).ToUpper()))
-                return true;
-            return false;
+            return _appSetting.AllowedRawExtensions.Contains(Path.GetExtension(filePath).ToUpper());
         }
 
         Bitmap GetBitmap(string filepath) {
