@@ -154,6 +154,8 @@ namespace MICExtended.Service
                 selection.FileTypes.Any(b => b.Equals(a.Extension, StringComparison.OrdinalIgnoreCase)) &&
                 (!selection.UseMinB100 || a.BytesPer100Pixel >= selection.MinB100) &&
                 (!selection.UseMinSize || a.Size >= selection.MinSize * 1024) &&
+                (!selection.UseModifiedDateFrom || a.ModifiedDate.Date >= selection.ModifiedDateFrom.Date) &&
+                (!selection.UseModifiedDateTo || a.ModifiedDate.Date <= selection.ModifiedDateTo.Date) &&
                 (!selection.SkipCompressed || !a.Comment.StartsWith("Mass Image Compressor"))
             ).ToList();
 
@@ -219,11 +221,14 @@ namespace MICExtended.Service
                         return "";
                     })();
 
+                    var fileInfo = new FileInfo(path);
+
                     return new FileModel {
                         RootPath = rootPath,
                         FilePath = path,
-                        Extension = Path.GetExtension(path),
-                        Size = fileStream.Length,
+                        Extension = fileInfo.Extension,
+                        Size = fileInfo.Length,
+                        ModifiedDate = fileInfo.LastWriteTime,
                         Height = img.Height,
                         Width = img.Width,
                         Comment = comment

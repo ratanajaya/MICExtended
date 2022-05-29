@@ -16,5 +16,10 @@ namespace MICExtended.Model
         public int MinSize { get; set; }
         public int MinB100 { get; set; }
         public bool SkipCompressed { get; set; }
+
+        public bool UseModifiedDateFrom { get; set; }
+        public bool UseModifiedDateTo { get; set; }
+        public DateTime ModifiedDateFrom { get; set; }
+        public DateTime ModifiedDateTo { get; set; }
     }
 }

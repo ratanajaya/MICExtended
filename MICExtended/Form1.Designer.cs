@@ -37,6 +37,7 @@
             this.srcColSize = new System.Windows.Forms.ColumnHeader();
             this.srcColDimension = new System.Windows.Forms.ColumnHeader();
             this.srcColBytesPerPixel = new System.Windows.Forms.ColumnHeader();
+            this.srcColModifiedDate = new System.Windows.Forms.ColumnHeader();
             this.btnCompress = new System.Windows.Forms.Button();
             this.grpSelection = new System.Windows.Forms.GroupBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -76,6 +77,7 @@
             this.dstColSize = new System.Windows.Forms.ColumnHeader();
             this.dstColDimension = new System.Windows.Forms.ColumnHeader();
             this.dstColBytesPerPixel = new System.Windows.Forms.ColumnHeader();
+            this.dstColModifiedDate = new System.Windows.Forms.ColumnHeader();
             this.grpSrcPath.SuspendLayout();
             this.grpDstPath.SuspendLayout();
             this.grpSelection.SuspendLayout();
@@ -169,7 +171,8 @@
             this.srcColFile,
             this.srcColSize,
             this.srcColDimension,
-            this.srcColBytesPerPixel});
+            this.srcColBytesPerPixel,
+            this.srcColModifiedDate});
             this.listViewSrc.Location = new System.Drawing.Point(0, 2);
             this.listViewSrc.Name = "listViewSrc";
             this.listViewSrc.Size = new System.Drawing.Size(800, 192);
@@ -182,7 +185,7 @@
             // srcColFile
             // 
             this.srcColFile.Text = "File Name";
-            this.srcColFile.Width = 539;
+            this.srcColFile.Width = 459;
             // 
             // srcColSize
             // 
@@ -198,6 +201,11 @@
             // 
             this.srcColBytesPerPixel.Text = "Bytes/100px";
             this.srcColBytesPerPixel.Width = 80;
+            // 
+            // srcColModifiedDate
+            // 
+            this.srcColModifiedDate.Text = "Modified";
+            this.srcColModifiedDate.Width = 80;
             // 
             // btnCompress
             // 
@@ -248,6 +256,7 @@
             this.dtModifiedTo.ShowCheckBox = true;
             this.dtModifiedTo.Size = new System.Drawing.Size(100, 23);
             this.dtModifiedTo.TabIndex = 19;
+            this.dtModifiedTo.ValueChanged += new System.EventHandler(this.dtModifiedTo_ValueChanged);
             // 
             // label5
             // 
@@ -267,6 +276,7 @@
             this.dtModifiedFrom.ShowCheckBox = true;
             this.dtModifiedFrom.Size = new System.Drawing.Size(100, 23);
             this.dtModifiedFrom.TabIndex = 17;
+            this.dtModifiedFrom.ValueChanged += new System.EventHandler(this.dtModifiedFrom_ValueChanged);
             // 
             // chkSkipCompressed
             // 
@@ -580,7 +590,8 @@
             this.dstColFile,
             this.dstColSize,
             this.dstColDimension,
-            this.dstColBytesPerPixel});
+            this.dstColBytesPerPixel,
+            this.dstColModifiedDate});
             this.listViewDst.Location = new System.Drawing.Point(0, 2);
             this.listViewDst.Name = "listViewDst";
             this.listViewDst.Size = new System.Drawing.Size(800, 192);
@@ -591,7 +602,7 @@
             // dstColFile
             // 
             this.dstColFile.Text = "File Name";
-            this.dstColFile.Width = 539;
+            this.dstColFile.Width = 459;
             // 
             // dstColSize
             // 
@@ -607,6 +618,11 @@
             // 
             this.dstColBytesPerPixel.Text = "Bytes/100px";
             this.dstColBytesPerPixel.Width = 80;
+            // 
+            // dstColModifiedDate
+            // 
+            this.dstColModifiedDate.Text = "Modified";
+            this.dstColModifiedDate.Width = 80;
             // 
             // Form1
             // 
@@ -708,5 +724,7 @@
         private GroupBox groupBox1;
         private DateTimePicker dtModifiedTo;
         private Label label5;
+        private ColumnHeader srcColModifiedDate;
+        private ColumnHeader dstColModifiedDate;
     }
 }

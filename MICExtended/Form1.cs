@@ -71,6 +71,7 @@ namespace MICExtended
                 lv.SubItems.Add(a.SizeDisplay);
                 lv.SubItems.Add(a.DimensionDisplay);
                 lv.SubItems.Add(a.BytesPer100PixelDisplay);
+                lv.SubItems.Add(a.ModifiedDate.ToString("yyyy/MM/dd"));
                 return lv;
             }).ToArray();
         }
@@ -297,6 +298,18 @@ namespace MICExtended
 
         private async void chkSkipCompressed_CheckedChanged(object sender, EventArgs e) {
             _viewModel.Selection.SkipCompressed = chkSkipCompressed.Checked;
+            await ReloadFiles();
+        }
+
+        private async void dtModifiedFrom_ValueChanged(object sender, EventArgs e) {
+            _viewModel.Selection.UseModifiedDateFrom = dtModifiedFrom.Checked;
+            _viewModel.Selection.ModifiedDateFrom = dtModifiedFrom.Value;
+            await ReloadFiles();
+        }
+
+        private async void dtModifiedTo_ValueChanged(object sender, EventArgs e) {
+            _viewModel.Selection.UseModifiedDateTo = dtModifiedTo.Checked;
+            _viewModel.Selection.ModifiedDateTo = dtModifiedTo.Value;
             await ReloadFiles();
         }
 
