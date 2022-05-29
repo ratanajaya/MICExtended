@@ -118,7 +118,7 @@ namespace MICExtended.Service
         }
 
         void SetImageComments(string filePath, Bitmap bmp, int quality) {
-            string newVal = "Mass Image Compressor Compressed this image. https://sourceforge.net/projects/icompress/ with Quality:" + quality;
+            string newVal = "Mass Image Compressor Compressed this image";
             try {
                 PropertyItem propItem;
 
