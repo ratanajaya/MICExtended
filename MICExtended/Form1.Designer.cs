@@ -41,6 +41,8 @@
             this.btnCompress = new System.Windows.Forms.Button();
             this.grpSelection = new System.Windows.Forms.GroupBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.chkModifiedTo = new System.Windows.Forms.CheckBox();
+            this.chkModifiedFrom = new System.Windows.Forms.CheckBox();
             this.dtModifiedTo = new System.Windows.Forms.DateTimePicker();
             this.label5 = new System.Windows.Forms.Label();
             this.dtModifiedFrom = new System.Windows.Forms.DateTimePicker();
@@ -237,6 +239,8 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.chkModifiedTo);
+            this.groupBox1.Controls.Add(this.chkModifiedFrom);
             this.groupBox1.Controls.Add(this.dtModifiedTo);
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.dtModifiedFrom);
@@ -247,21 +251,41 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Modified Date (From/To)";
             // 
+            // chkModifiedTo
+            // 
+            this.chkModifiedTo.AutoSize = true;
+            this.chkModifiedTo.Location = new System.Drawing.Point(140, 23);
+            this.chkModifiedTo.Name = "chkModifiedTo";
+            this.chkModifiedTo.Size = new System.Drawing.Size(15, 14);
+            this.chkModifiedTo.TabIndex = 20;
+            this.chkModifiedTo.UseVisualStyleBackColor = true;
+            this.chkModifiedTo.MouseClick += new System.Windows.Forms.MouseEventHandler(this.selectionChk_Click);
+            // 
+            // chkModifiedFrom
+            // 
+            this.chkModifiedFrom.AutoSize = true;
+            this.chkModifiedFrom.Location = new System.Drawing.Point(9, 23);
+            this.chkModifiedFrom.Name = "chkModifiedFrom";
+            this.chkModifiedFrom.Size = new System.Drawing.Size(15, 14);
+            this.chkModifiedFrom.TabIndex = 17;
+            this.chkModifiedFrom.UseVisualStyleBackColor = true;
+            this.chkModifiedFrom.MouseClick += new System.Windows.Forms.MouseEventHandler(this.selectionChk_Click);
+            // 
             // dtModifiedTo
             // 
             this.dtModifiedTo.Checked = false;
             this.dtModifiedTo.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dtModifiedTo.Location = new System.Drawing.Point(141, 19);
+            this.dtModifiedTo.Location = new System.Drawing.Point(158, 19);
+            this.dtModifiedTo.MinDate = new System.DateTime(1920, 1, 1, 0, 0, 0, 0);
             this.dtModifiedTo.Name = "dtModifiedTo";
-            this.dtModifiedTo.ShowCheckBox = true;
-            this.dtModifiedTo.Size = new System.Drawing.Size(100, 23);
+            this.dtModifiedTo.Size = new System.Drawing.Size(88, 23);
             this.dtModifiedTo.TabIndex = 19;
             this.dtModifiedTo.ValueChanged += new System.EventHandler(this.dtModifiedTo_ValueChanged);
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(119, 22);
+            this.label5.Location = new System.Drawing.Point(122, 22);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(12, 15);
             this.label5.TabIndex = 18;
@@ -271,10 +295,10 @@
             // 
             this.dtModifiedFrom.Checked = false;
             this.dtModifiedFrom.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dtModifiedFrom.Location = new System.Drawing.Point(9, 19);
+            this.dtModifiedFrom.Location = new System.Drawing.Point(27, 19);
+            this.dtModifiedFrom.MinDate = new System.DateTime(1970, 1, 1, 0, 0, 0, 0);
             this.dtModifiedFrom.Name = "dtModifiedFrom";
-            this.dtModifiedFrom.ShowCheckBox = true;
-            this.dtModifiedFrom.Size = new System.Drawing.Size(100, 23);
+            this.dtModifiedFrom.Size = new System.Drawing.Size(88, 23);
             this.dtModifiedFrom.TabIndex = 17;
             this.dtModifiedFrom.ValueChanged += new System.EventHandler(this.dtModifiedFrom_ValueChanged);
             // 
@@ -324,7 +348,7 @@
             this.chkMinB100.TabIndex = 14;
             this.chkMinB100.Text = "Min B/100px";
             this.chkMinB100.UseVisualStyleBackColor = true;
-            this.chkMinB100.MouseClick += new System.Windows.Forms.MouseEventHandler(this.minParameter_CheckedChanged);
+            this.chkMinB100.MouseClick += new System.Windows.Forms.MouseEventHandler(this.selectionChk_Click);
             // 
             // chkMinSize
             // 
@@ -335,7 +359,7 @@
             this.chkMinSize.TabIndex = 13;
             this.chkMinSize.Text = "Min Size (Kb)";
             this.chkMinSize.UseVisualStyleBackColor = true;
-            this.chkMinSize.MouseClick += new System.Windows.Forms.MouseEventHandler(this.minParameter_CheckedChanged);
+            this.chkMinSize.MouseClick += new System.Windows.Forms.MouseEventHandler(this.selectionChk_Click);
             // 
             // clFileType
             // 
@@ -726,5 +750,7 @@
         private Label label5;
         private ColumnHeader srcColModifiedDate;
         private ColumnHeader dstColModifiedDate;
+        private CheckBox chkModifiedFrom;
+        private CheckBox chkModifiedTo;
     }
 }

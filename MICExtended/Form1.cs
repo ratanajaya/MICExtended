@@ -43,8 +43,8 @@ namespace MICExtended
 
             UpdateDirectoryDisplays();
             UpdateClFileType();
-            updateFileSelectionChk();
-            UpdateFileSelectionMinParameterValue();
+            UpdateFileSelectionChk();
+            UpdateFileSelectionValue();
 
             UpdateCompressionParameter();
             await UpdateProgressBar();
@@ -120,7 +120,7 @@ namespace MICExtended
             }
         }
 
-        private void updateFileSelectionChk() {
+        private void UpdateFileSelectionChk() {
             chkMinSize.Checked = _viewModel.Selection.UseMinSize;
             numMinSize.Enabled = _viewModel.Selection.UseMinSize;
 
@@ -128,11 +128,20 @@ namespace MICExtended
             numMinB100.Enabled = _viewModel.Selection.UseMinB100;
 
             chkSkipCompressed.Checked = _viewModel.Selection.SkipCompressed;
+
+            chkModifiedFrom.Checked = _viewModel.Selection.UseModifiedDateFrom;
+            dtModifiedFrom.Enabled = _viewModel.Selection.UseModifiedDateFrom;
+
+            chkModifiedTo.Checked = _viewModel.Selection.UseModifiedDateTo;
+            dtModifiedTo.Enabled = _viewModel.Selection.UseModifiedDateTo;
         }
 
-        private void UpdateFileSelectionMinParameterValue() {
+        private void UpdateFileSelectionValue() {
             numMinSize.Value = _viewModel.Selection.MinSize;
             numMinB100.Value = _viewModel.Selection.MinB100;
+
+            dtModifiedFrom.Value = _viewModel.Selection.ModifiedDateFrom.Clamp(Constant.MIN_DATE, Constant.MAX_DATE);
+            dtModifiedTo.Value = _viewModel.Selection.ModifiedDateTo.Clamp(Constant.MIN_DATE, Constant.MAX_DATE);
         }
 
         private async Task UpdateProgressBar() {
@@ -278,11 +287,14 @@ namespace MICExtended
             await ReloadFiles();
         }
 
-        private async void minParameter_CheckedChanged(object sender, EventArgs e) {
+        private async void selectionChk_Click(object sender, EventArgs e) {
             _viewModel.Selection.UseMinSize = chkMinSize.Checked;
             _viewModel.Selection.UseMinB100 = chkMinB100.Checked;
 
-            updateFileSelectionChk();
+            _viewModel.Selection.UseModifiedDateFrom = chkModifiedFrom.Checked;
+            _viewModel.Selection.UseModifiedDateTo = chkModifiedTo.Checked;
+
+            UpdateFileSelectionChk();
             await ReloadFiles();
         }
 
@@ -302,13 +314,11 @@ namespace MICExtended
         }
 
         private async void dtModifiedFrom_ValueChanged(object sender, EventArgs e) {
-            _viewModel.Selection.UseModifiedDateFrom = dtModifiedFrom.Checked;
             _viewModel.Selection.ModifiedDateFrom = dtModifiedFrom.Value;
             await ReloadFiles();
         }
 
         private async void dtModifiedTo_ValueChanged(object sender, EventArgs e) {
-            _viewModel.Selection.UseModifiedDateTo = dtModifiedTo.Checked;
             _viewModel.Selection.ModifiedDateTo = dtModifiedTo.Value;
             await ReloadFiles();
         }
