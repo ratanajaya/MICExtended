@@ -41,6 +41,12 @@ namespace MICExtended
             clFileType.Items.AddRange(_appSetting.AllowedExtensions);
             clFileType.CheckOnClick = true;
 
+            dtModifiedFrom.Format = dtModifiedTo.Format = DateTimePickerFormat.Custom;
+            dtModifiedFrom.CustomFormat = dtModifiedTo.CustomFormat = " yyyy/MM/dd";
+
+            tmModifiedFrom.Format = tmModifiedTo.Format = DateTimePickerFormat.Custom;
+            tmModifiedFrom.CustomFormat = tmModifiedTo.CustomFormat = " HH:mm:ss";
+
             UpdateDirectoryDisplays();
             UpdateClFileType();
             UpdateFileSelectionChk();
@@ -71,7 +77,7 @@ namespace MICExtended
                 lv.SubItems.Add(a.SizeDisplay);
                 lv.SubItems.Add(a.DimensionDisplay);
                 lv.SubItems.Add(a.BytesPer100PixelDisplay);
-                lv.SubItems.Add(a.ModifiedDate.ToString("yyyy/MM/dd"));
+                lv.SubItems.Add(a.ModifiedDate.ToString("yyyy/MM/dd  HH:mm:ss"));
                 return lv;
             }).ToArray();
         }
@@ -131,17 +137,23 @@ namespace MICExtended
 
             chkModifiedFrom.Checked = _viewModel.Selection.UseModifiedDateFrom;
             dtModifiedFrom.Enabled = _viewModel.Selection.UseModifiedDateFrom;
+            tmModifiedFrom.Enabled = _viewModel.Selection.UseModifiedDateFrom;
 
             chkModifiedTo.Checked = _viewModel.Selection.UseModifiedDateTo;
             dtModifiedTo.Enabled = _viewModel.Selection.UseModifiedDateTo;
+            tmModifiedTo.Enabled = _viewModel.Selection.UseModifiedDateTo;
         }
 
         private void UpdateFileSelectionValue() {
             numMinSize.Value = _viewModel.Selection.MinSize;
             numMinB100.Value = _viewModel.Selection.MinB100;
 
-            dtModifiedFrom.Value = _viewModel.Selection.ModifiedDateFrom.Clamp(Constant.MIN_DATE, Constant.MAX_DATE);
-            dtModifiedTo.Value = _viewModel.Selection.ModifiedDateTo.Clamp(Constant.MIN_DATE, Constant.MAX_DATE);
+            var dtFrom = _viewModel.Selection.ModifiedDateFrom.Clamp(Constant.MIN_DATE, Constant.MAX_DATE);
+            var dtTo = _viewModel.Selection.ModifiedDateTo.Clamp(Constant.MIN_DATE, Constant.MAX_DATE);
+            dtModifiedFrom.Value = dtFrom.Date;
+            dtModifiedTo.Value = dtTo.Date;
+            tmModifiedFrom.Value = dtFrom;
+            tmModifiedTo.Value = dtTo;
         }
 
         private async Task UpdateProgressBar() {
@@ -314,12 +326,12 @@ namespace MICExtended
         }
 
         private async void dtModifiedFrom_ValueChanged(object sender, EventArgs e) {
-            _viewModel.Selection.ModifiedDateFrom = dtModifiedFrom.Value;
+            _viewModel.Selection.ModifiedDateFrom = dtModifiedFrom.Value.Date + tmModifiedFrom.Value.TimeOfDay;
             await ReloadFiles();
         }
 
         private async void dtModifiedTo_ValueChanged(object sender, EventArgs e) {
-            _viewModel.Selection.ModifiedDateTo = dtModifiedTo.Value;
+            _viewModel.Selection.ModifiedDateTo = dtModifiedTo.Value.Date + tmModifiedTo.Value.TimeOfDay;
             await ReloadFiles();
         }
 

@@ -158,8 +158,8 @@ namespace MICExtended.Service
                 selection.FileTypes.Any(b => b.Equals(a.Extension, StringComparison.OrdinalIgnoreCase)) &&
                 (!selection.UseMinB100 || a.BytesPer100Pixel >= selection.MinB100) &&
                 (!selection.UseMinSize || a.Size >= selection.MinSize * 1024) &&
-                (!selection.UseModifiedDateFrom || a.ModifiedDate.Date >= selection.ModifiedDateFrom.Date) &&
-                (!selection.UseModifiedDateTo || a.ModifiedDate.Date <= selection.ModifiedDateTo.Date) &&
+                (!selection.UseModifiedDateFrom || a.ModifiedDate >= selection.ModifiedDateFrom) &&
+                (!selection.UseModifiedDateTo || a.ModifiedDate <= selection.ModifiedDateTo) &&
                 (!selection.SkipCompressed || !a.Comment.StartsWith("Mass Image Compressor"))
             ).ToList();
 
