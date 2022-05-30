@@ -41,6 +41,8 @@
             this.btnCompress = new System.Windows.Forms.Button();
             this.grpSelection = new System.Windows.Forms.GroupBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.tmModifiedTo = new System.Windows.Forms.DateTimePicker();
+            this.tmModifiedFrom = new System.Windows.Forms.DateTimePicker();
             this.chkModifiedTo = new System.Windows.Forms.CheckBox();
             this.chkModifiedFrom = new System.Windows.Forms.CheckBox();
             this.dtModifiedTo = new System.Windows.Forms.DateTimePicker();
@@ -192,7 +194,6 @@
             // srcColSize
             // 
             this.srcColSize.Text = "Size";
-            this.srcColSize.Width = 80;
             // 
             // srcColDimension
             // 
@@ -201,18 +202,17 @@
             // 
             // srcColBytesPerPixel
             // 
-            this.srcColBytesPerPixel.Text = "Bytes/100px";
-            this.srcColBytesPerPixel.Width = 80;
+            this.srcColBytesPerPixel.Text = "B/100px";
             // 
             // srcColModifiedDate
             // 
             this.srcColModifiedDate.Text = "Modified";
-            this.srcColModifiedDate.Width = 80;
+            this.srcColModifiedDate.Width = 120;
             // 
             // btnCompress
             // 
             this.btnCompress.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.btnCompress.Location = new System.Drawing.Point(720, 472);
+            this.btnCompress.Location = new System.Drawing.Point(720, 482);
             this.btnCompress.Name = "btnCompress";
             this.btnCompress.Size = new System.Drawing.Size(100, 40);
             this.btnCompress.TabIndex = 5;
@@ -232,13 +232,15 @@
             this.grpSelection.Controls.Add(this.chkFileTypeAll);
             this.grpSelection.Location = new System.Drawing.Point(10, 69);
             this.grpSelection.Name = "grpSelection";
-            this.grpSelection.Size = new System.Drawing.Size(400, 160);
+            this.grpSelection.Size = new System.Drawing.Size(400, 180);
             this.grpSelection.TabIndex = 2;
             this.grpSelection.TabStop = false;
             this.grpSelection.Text = "File Selection";
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.tmModifiedTo);
+            this.groupBox1.Controls.Add(this.tmModifiedFrom);
             this.groupBox1.Controls.Add(this.chkModifiedTo);
             this.groupBox1.Controls.Add(this.chkModifiedFrom);
             this.groupBox1.Controls.Add(this.dtModifiedTo);
@@ -246,15 +248,39 @@
             this.groupBox1.Controls.Add(this.dtModifiedFrom);
             this.groupBox1.Location = new System.Drawing.Point(134, 104);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(260, 50);
+            this.groupBox1.Size = new System.Drawing.Size(260, 70);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Modified Date (From/To)";
             // 
+            // tmModifiedTo
+            // 
+            this.tmModifiedTo.Checked = false;
+            this.tmModifiedTo.Format = System.Windows.Forms.DateTimePickerFormat.Time;
+            this.tmModifiedTo.Location = new System.Drawing.Point(158, 41);
+            this.tmModifiedTo.MinDate = new System.DateTime(1970, 1, 1, 0, 0, 0, 0);
+            this.tmModifiedTo.Name = "tmModifiedTo";
+            this.tmModifiedTo.ShowUpDown = true;
+            this.tmModifiedTo.Size = new System.Drawing.Size(88, 23);
+            this.tmModifiedTo.TabIndex = 22;
+            this.tmModifiedTo.ValueChanged += new System.EventHandler(this.dtModifiedTo_ValueChanged);
+            // 
+            // tmModifiedFrom
+            // 
+            this.tmModifiedFrom.Checked = false;
+            this.tmModifiedFrom.Format = System.Windows.Forms.DateTimePickerFormat.Time;
+            this.tmModifiedFrom.Location = new System.Drawing.Point(27, 41);
+            this.tmModifiedFrom.MinDate = new System.DateTime(1970, 1, 1, 0, 0, 0, 0);
+            this.tmModifiedFrom.Name = "tmModifiedFrom";
+            this.tmModifiedFrom.ShowUpDown = true;
+            this.tmModifiedFrom.Size = new System.Drawing.Size(88, 23);
+            this.tmModifiedFrom.TabIndex = 21;
+            this.tmModifiedFrom.ValueChanged += new System.EventHandler(this.dtModifiedFrom_ValueChanged);
+            // 
             // chkModifiedTo
             // 
             this.chkModifiedTo.AutoSize = true;
-            this.chkModifiedTo.Location = new System.Drawing.Point(140, 23);
+            this.chkModifiedTo.Location = new System.Drawing.Point(140, 35);
             this.chkModifiedTo.Name = "chkModifiedTo";
             this.chkModifiedTo.Size = new System.Drawing.Size(15, 14);
             this.chkModifiedTo.TabIndex = 20;
@@ -264,7 +290,7 @@
             // chkModifiedFrom
             // 
             this.chkModifiedFrom.AutoSize = true;
-            this.chkModifiedFrom.Location = new System.Drawing.Point(9, 23);
+            this.chkModifiedFrom.Location = new System.Drawing.Point(9, 35);
             this.chkModifiedFrom.Name = "chkModifiedFrom";
             this.chkModifiedFrom.Size = new System.Drawing.Size(15, 14);
             this.chkModifiedFrom.TabIndex = 17;
@@ -285,7 +311,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(122, 22);
+            this.label5.Location = new System.Drawing.Point(122, 34);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(12, 15);
             this.label5.TabIndex = 18;
@@ -560,7 +586,7 @@
             // lblProgress
             // 
             this.lblProgress.AutoSize = true;
-            this.lblProgress.Location = new System.Drawing.Point(10, 468);
+            this.lblProgress.Location = new System.Drawing.Point(10, 478);
             this.lblProgress.Name = "lblProgress";
             this.lblProgress.Size = new System.Drawing.Size(61, 15);
             this.lblProgress.TabIndex = 6;
@@ -568,7 +594,7 @@
             // 
             // barProgress
             // 
-            this.barProgress.Location = new System.Drawing.Point(10, 489);
+            this.barProgress.Location = new System.Drawing.Point(10, 499);
             this.barProgress.Maximum = 1000;
             this.barProgress.Name = "barProgress";
             this.barProgress.Size = new System.Drawing.Size(700, 23);
@@ -580,7 +606,7 @@
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Location = new System.Drawing.Point(10, 241);
+            this.tabControl1.Location = new System.Drawing.Point(10, 251);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(810, 224);
@@ -631,7 +657,6 @@
             // dstColSize
             // 
             this.dstColSize.Text = "Size";
-            this.dstColSize.Width = 80;
             // 
             // dstColDimension
             // 
@@ -640,19 +665,18 @@
             // 
             // dstColBytesPerPixel
             // 
-            this.dstColBytesPerPixel.Text = "Bytes/100px";
-            this.dstColBytesPerPixel.Width = 80;
+            this.dstColBytesPerPixel.Text = "B/100px";
             // 
             // dstColModifiedDate
             // 
             this.dstColModifiedDate.Text = "Modified";
-            this.dstColModifiedDate.Width = 80;
+            this.dstColModifiedDate.Width = 120;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(829, 521);
+            this.ClientSize = new System.Drawing.Size(829, 541);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.barProgress);
             this.Controls.Add(this.lblProgress);
@@ -752,5 +776,7 @@
         private ColumnHeader dstColModifiedDate;
         private CheckBox chkModifiedFrom;
         private CheckBox chkModifiedTo;
+        private DateTimePicker tmModifiedFrom;
+        private DateTimePicker tmModifiedTo;
     }
 }
