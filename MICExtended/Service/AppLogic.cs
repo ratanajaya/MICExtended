@@ -42,6 +42,10 @@ namespace MICExtended.Service
                     CheckAllFile = false,
                     UseMinB100 = false,
                     UseMinSize = false,
+                    UseModifiedDateFrom = false,
+                    UseModifiedDateTo = false,
+                    ModifiedDateFrom = DateTime.Now,
+                    ModifiedDateTo = DateTime.Now,
                 },
                 Compression = new CompressionCondition {
                     ConvertTo = SupportedMimeType.ORIGINAL,

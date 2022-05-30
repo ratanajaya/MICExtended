@@ -43,5 +43,11 @@ namespace MICExtended.Common
 
             return formatted;
         }
+
+        public static DateTime Clamp(this DateTime source, DateTime min, DateTime max) {
+            if(source < min) return min;
+            if(source > max) return max;
+            return source;
+        }
     }
 }

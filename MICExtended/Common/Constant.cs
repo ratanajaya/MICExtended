@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MICExtended.Model;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -22,6 +23,8 @@ namespace MICExtended.Common
         }
 
         public const int COMMENT_PROPID = 0x9286;
+        public static readonly DateTime MIN_DATE = new DateTime(1970, 01, 01);
+        public static readonly DateTime MAX_DATE = new DateTime(9998, 12, 31);
     }
 
     public enum SupportedMimeType
