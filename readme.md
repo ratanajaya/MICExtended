@@ -2,7 +2,7 @@
 
 > Windows application for compressing image in a batch
 
-<a href="https://drive.google.com/file/d/11HZJprPqRCFA5dQVWn8SlmFBB3hEbtK5/view?usp=sharing">Download the latest build in .zip here</a>
+<a href="https://drive.google.com/file/d/11nSlAlS8HsjFe4sSwPj7Alpi1LTulO6j/view?usp=sharing">Download the latest build in .zip here</a>
 
 ### Disclaimer
 This  application is a fork of yogee's <a href="https://sourceforge.net/projects/icompress/">Mass Image Compressor app</a>, utilizing its compression methods while entirely redoing the UI and modifying some behaviors to suit my personal preference. Eventually this application will have more features before being released for public.
@@ -12,4 +12,4 @@ This  application is a fork of yogee's <a href="https://sourceforge.net/projects
 
 #### Preview
 
-![](_Extras/CaptureV1.2.PNG)
+![](_Extras/CaptureV1.3.PNG)
