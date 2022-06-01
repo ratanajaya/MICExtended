@@ -23,7 +23,7 @@ namespace MICExtended
             var services = new ServiceCollection();
             services.AddTransient<AppLogic>();
             services.AddTransient<IIoWapper, IoWrapper>();
-            services.AddTransient<ImageCompressor>();
+            services.AddTransient<ImageProcessor>();
             services.AddTransient<Form1>();
             services.AddSingleton<ILogger>(new LoggerConfiguration()
                         .WriteTo.File(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "log/log-.txt"), rollingInterval: RollingInterval.Day, retainedFileCountLimit: 10)
