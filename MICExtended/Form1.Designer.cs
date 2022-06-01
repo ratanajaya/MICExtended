@@ -246,7 +246,7 @@
             this.groupBox1.Controls.Add(this.dtModifiedTo);
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.dtModifiedFrom);
-            this.groupBox1.Location = new System.Drawing.Point(134, 104);
+            this.groupBox1.Location = new System.Drawing.Point(134, 77);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(260, 70);
             this.groupBox1.TabIndex = 2;
@@ -331,12 +331,13 @@
             // chkSkipCompressed
             // 
             this.chkSkipCompressed.AutoSize = true;
-            this.chkSkipCompressed.Location = new System.Drawing.Point(143, 79);
+            this.chkSkipCompressed.Location = new System.Drawing.Point(143, 152);
             this.chkSkipCompressed.Name = "chkSkipCompressed";
             this.chkSkipCompressed.Size = new System.Drawing.Size(158, 19);
             this.chkSkipCompressed.TabIndex = 16;
             this.chkSkipCompressed.Text = "Skip Compressed Images";
             this.chkSkipCompressed.UseVisualStyleBackColor = true;
+            this.chkSkipCompressed.Visible = false;
             this.chkSkipCompressed.CheckedChanged += new System.EventHandler(this.chkSkipCompressed_CheckedChanged);
             // 
             // numMinB100
@@ -421,7 +422,7 @@
             this.grpCompression.Controls.Add(this.trkQuality);
             this.grpCompression.Location = new System.Drawing.Point(420, 69);
             this.grpCompression.Name = "grpCompression";
-            this.grpCompression.Size = new System.Drawing.Size(400, 160);
+            this.grpCompression.Size = new System.Drawing.Size(400, 180);
             this.grpCompression.TabIndex = 3;
             this.grpCompression.TabStop = false;
             this.grpCompression.Text = "Compression Parameter";

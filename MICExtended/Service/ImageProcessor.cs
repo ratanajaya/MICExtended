@@ -12,6 +12,7 @@ using MICExtended.Common;
 using Serilog;
 using System.Reflection;
 using MICExtended.Model;
+using System.Text;
 
 namespace MICExtended.Service
 {
@@ -19,34 +20,21 @@ namespace MICExtended.Service
     /// Taken from yugee's Mass Image Compressor
     /// https://sourceforge.net/p/icompress/code/
     /// </summary>
-    public class ImageCompressor
+    public class ImageProcessor
     {
         //TODO refactor class to use IoWrapper
         private AppSettingJson _appSetting;
         private ILogger _log;
 
-        public ImageCompressor(ILogger log, AppSettingJson appSetting) {
+        public ImageProcessor(ILogger log, AppSettingJson appSetting) {
             _log = log;
             _appSetting = appSetting;
         }
 
         #region From ImageCompressor.cs
-        public void CompressImage(string filePath, string savePath, int quality, Size size, SupportedMimeType type) {
-            Bitmap img = GetBitmap(filePath);
-
-            this.CompressImage(
-                filePath,
-                img,
-                savePath,
-                quality,
-                size,
-                type
-                    );
-            img.Dispose();
-        }
-
-        void CompressImage(string filePath, Bitmap img, string savePath, int quality, Size size, SupportedMimeType type) {
+        public bool CompressImage(string filePath, string savePath, int quality, Size size, SupportedMimeType type) {
             try {
+                Bitmap img = GetBitmap(filePath);
                 byte[] originalFile = null;
                 if(SavingAsSameMimeType(filePath, type)) {
                     originalFile = File.ReadAllBytes(filePath);
@@ -62,7 +50,7 @@ namespace MICExtended.Service
                     imageCodecInfo = GetEncoderInfoFromOriginalFile(filePath);
 
                 if(imageCodecInfo == null)
-                    return;
+                    return false;
 
                 EncoderParameters encoderParameters;
 
@@ -90,11 +78,11 @@ namespace MICExtended.Service
                 if(quality > GetQualityIfCompressed(filePath, imgCompressed))
                     quality = GetQualityIfCompressed(filePath, imgCompressed); //don't save higher qulaity than required.
 
-                SetImageComments(filePath, imgCompressed, quality);
+                //SetImageComments(filePath, imgCompressed, quality);
 
                 encoderParameters = new EncoderParameters(1);
                 encoderParameters.Param[0] =
-                    new EncoderParameter(Encoder.Quality, quality);
+                    new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, quality);
 
                 string fileSavePath = ChangeExensionToMimeType(savePath, type);
                 imgCompressed.Save(fileSavePath, imageCodecInfo, encoderParameters);
@@ -113,35 +101,75 @@ namespace MICExtended.Service
                 if(keepOriginalSize && SavingAsSameMimeType(filePath, type) && GetFileSize(fileSavePath) > OriginalFileSize) {
                     File.WriteAllBytes(fileSavePath, originalFile);
                 }
+
+                return true;
             }
             catch(Exception ex) {
                 _log.Error($"CompressImage | {filePath} | {ex.Message}");
+                return false;
             }
         }
 
-        void SetImageComments(string filePath, Bitmap bmp, int quality) {
-            string newVal = "Mass Image Compressor Compressed this image";
+        public void SetComment(string filePath) {
             try {
-                PropertyItem propItem;
+                var ext = Path.GetExtension(filePath);
 
-                if(bmp.PropertyIdList.Contains(Constant.COMMENT_PROPID))
-                    propItem = bmp.GetPropertyItem(Constant.COMMENT_PROPID);
-                else {
-                    propItem = (PropertyItem)System.Runtime.Serialization.FormatterServices.GetUninitializedObject(typeof(PropertyItem));
-                    propItem.Id = Constant.COMMENT_PROPID;
+                if(ext == Constant.Extension.JPG)
+                    SetJpgComment(filePath);
+                else if(ext == Constant.Extension.PNG) {
+                    //TODO
                 }
-
-                propItem.Len = newVal.Length + 1;
-
-                byte[] newValb = System.Text.Encoding.UTF8.GetBytes(newVal + "\0");
-
-                propItem.Value = newValb;
-                propItem.Type = 2;
-                bmp.SetPropertyItem(propItem);
             }
             catch(Exception ex) {
-                _log.Error($"SetImageComments | {filePath} | {ex.Message}");
+                _log.Error($"SetComment | {filePath} | {ex.Message}");
             }
+        }
+
+        public string GetComment(string filePath, Image img) {
+            try {
+                var ext = Path.GetExtension(filePath);
+
+                if(ext == Constant.Extension.JPG) {
+                    //var commentProp = img.PropertyItems.FirstOrDefault(a => a.Id == Constant.COMMENT_PROPID);
+                    //if(commentProp != null)
+                    //    return Encoding.UTF8.GetString(commentProp?.Value).Replace("\0", string.Empty);
+                    //TODO
+                }
+                else if(ext == Constant.Extension.PNG) {
+                    //TODO
+                }
+                return string.Empty;
+            }
+            catch(Exception ex) {
+                _log.Error($"LoadComment | {filePath} | {ex.Message}");
+                return string.Empty;
+            }
+        }
+
+        void SetJpgComment(string filePath) {
+            //Bitmap bmp = GetBitmap(filePath);
+            //string comment = Constant.Message.ImageComment;
+            //try {
+            //    PropertyItem propItem;
+
+            //    if(bmp.PropertyIdList.Contains(Constant.COMMENT_PROPID))
+            //        propItem = bmp.GetPropertyItem(Constant.COMMENT_PROPID);
+            //    else {
+            //        propItem = (PropertyItem)System.Runtime.Serialization.FormatterServices.GetUninitializedObject(typeof(PropertyItem));
+            //        propItem.Id = Constant.COMMENT_PROPID;
+            //    }
+
+            //    propItem.Len = comment.Length + 1;
+
+            //    byte[] newValb = System.Text.Encoding.UTF8.GetBytes(comment + "\0");
+
+            //    propItem.Value = newValb;
+            //    propItem.Type = 2;
+            //    bmp.SetPropertyItem(propItem);
+            //}
+            //catch(Exception ex) {
+            //    _log.Error($"SetImageComments | {filePath} | {ex.Message}");
+            //}
         }
         #endregion
 

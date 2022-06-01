@@ -21,15 +21,15 @@ namespace MICExtended.Service
     {
         private AppSettingJson _appSetting;
         private IIoWapper _io;
-        private ImageCompressor _ic;
+        private ImageProcessor _ip;
         private ILogger _log;
         private string _configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json");
 
         private Dictionary<string, List<FileModel>> _fileCache = new Dictionary<string, List<FileModel>>();
 
-        public AppLogic(IIoWapper io, ImageCompressor ic, ILogger log, AppSettingJson appSetting) {
+        public AppLogic(IIoWapper io, ImageProcessor ip, ILogger log, AppSettingJson appSetting) {
             _io = io;
-            _ic = ic;
+            _ip = ip;
             _log = log;
             _appSetting = appSetting;
         }
@@ -215,15 +215,8 @@ namespace MICExtended.Service
         private FileModel GetFileViewModel(string path, string rootPath, bool loadComment = false) {
             using(var fileStream = _io.GetStream(path)) {
                 using(var img = Image.FromStream(fileStream, false, false)) {
-                    var comment = new Func<string>(() => {
-                        if(!loadComment) return string.Empty;
-
-                        var commentProp = img.PropertyItems.FirstOrDefault(a => a.Id == Constant.COMMENT_PROPID);
-                        if(commentProp != null)
-                            return Encoding.UTF8.GetString(commentProp?.Value).Replace("\0", string.Empty);
-
-                        return "";
-                    })();
+                    var comment = !loadComment ? ""
+                        : _ip.GetComment(path, img);
 
                     var fileInfo = new FileInfo(path);
 
@@ -279,8 +272,7 @@ namespace MICExtended.Service
             };
             progress.Report(parallelReport);
 
-            //Parallel.For(0, srcFiles.Count, new ParallelOptions { MaxDegreeOfParallelism = 1 }, (i, state) => {
-            Parallel.For(0, srcFiles.Count, (i, state) => {
+            Parallel.For(0, srcFiles.Count, new ParallelOptions { MaxDegreeOfParallelism = 8 }, (i, state) => {
                 //DO NOT perform operation that may target toward the same filesystem entity as it can cause race condition
                 //Performing _io.CreateDirectory() here can cause race condition
                 var src = srcFiles[i];
@@ -303,7 +295,10 @@ namespace MICExtended.Service
                         return new Size(src.Width, src.Height);
                     })();
 
-                    _ic.CompressImage(src.FilePath, dst.FilePath, compressionCondition.Quality, newSize, compressionCondition.ConvertTo);
+                    var success = _ip.CompressImage(src.FilePath, dst.FilePath, compressionCondition.Quality, newSize, compressionCondition.ConvertTo);
+                    if(success)
+                        _ip.SetComment(dst.FilePath);
+
                     if(compressionCondition.ReplaceOriginal && src.FilePath != dst.FilePath) {
                         _io.DeleteFile(src.FilePath);
                     }
