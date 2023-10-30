@@ -1,14 +1,12 @@
 # Mass Image Compressor Extended
 
-> Windows application for compressing image in a batch
+Windows application for compressing images in batches.
 
-<a href="https://drive.google.com/file/d/11nSlAlS8HsjFe4sSwPj7Alpi1LTulO6j/view?usp=sharing">Download the latest build in .zip here</a>
-
-### Disclaimer
-This  application is a fork of yogee's <a href="https://sourceforge.net/projects/icompress/">Mass Image Compressor app</a>, utilizing its compression methods while entirely redoing the UI and modifying some behaviors to suit my personal preference. Eventually this application will have more features before being released for public.
+#### Disclaimer
+This application is a fork of yogee's <a href="https://sourceforge.net/projects/icompress/">Mass Image Compressor app</a>, using its compression methods but with a completely redesigned UI and multi-threading support.
 
 #### Tech & Design Pattern
-.Net 6, WinForm, Dependency Injection, MVVM, Unit Testing.
+> .Net 6, WinForm, Dependency Injection, MVVM, Unit Testing.
 
 #### Preview
 
